@@ -1,0 +1,40 @@
+package com.example.demo.Model;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
+public class CustomUserDetails implements UserDetails {
+
+    private final AppUser user;
+
+    public CustomUserDetails(AppUser user) {
+        this.user = user;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("USER"));
+    }
+
+    public String getPassword() {
+        return user.getPassword();
+    }
+
+    public String getUsername() {
+        return user.getEmail();
+    }
+
+    public String getFullname() {
+        return user.getFullname();
+    }
+
+}
