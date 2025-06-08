@@ -198,42 +198,71 @@ function toggleTask(taskId) {
 // ============================================
 // UI Rendering & Utility Functions
 // ============================================
-// Renders the tasks list in the UI.
-function renderTasks(tasksToRender = tasks) {
-    const tasksList = document.getElementById('tasksList');
-
-    if (tasksToRender.length === 0) {
-        tasksList.innerHTML = `
-            <div class="text-center py-5">
-                <i class="fas fa-tasks text-muted mb-3" style="font-size: 3rem;"></i>
-                <p class="text-muted">No tasks found</p>
-            </div>
-        `;
-        return;
-    }
-
-    tasksList.innerHTML = tasksToRender.map(task => `
-        <div class="task-list-item d-flex align-items-center ${task.completed ? 'completed' : ''}" data-task-id="${task.task_id}">
-            <div class="task-checkbox ${task.completed ? 'completed' : ''} me-3" onclick="toggleTask(${task.task_id})">
-                ${task.completed ? '<i class="fas fa-check text-primary"></i>' : ''}
-            </div>
-            <div class="flex-grow-1">
-                <span class="task-text">${task.title}</span>
-            </div>
-            <span class="text-muted small me-3">${task.dueDate ? task.dueDate : ''}</span>
-            <button class="btn btn-sm btn-outline-danger" onclick="deleteTask(${task.task_id})" title="Delete task">
-                <i class="fas fa-trash"></i>
-            </button>
-        </div>
-    `).join('');
+// Helper to format ISO date strings into a locale-specific date and time.
+function formatDate(dateStr) {
+  if (!dateStr) return '';
+  return new Date(dateStr).toLocaleString();
 }
 
-// Sets up the live search functionality.
+// Renders the list of tasks, including a hidden description element for each task.
+function renderTasks(tasksToRender = tasks) {
+  const tasksList = document.getElementById('tasksList');
+
+  if (tasksToRender.length === 0) {
+    tasksList.innerHTML = `
+      <div class="text-center py-5">
+        <i class="fas fa-tasks text-muted mb-3" style="font-size: 3rem;"></i>
+        <p class="text-muted">No tasks found</p>
+      </div>
+    `;
+    return;
+  }
+
+  // Generate the HTML markup for each task.
+  tasksList.innerHTML = tasksToRender
+    .map(task => `
+      <div class="task-list-item d-flex flex-column" data-task-id="${task.task_id}">
+        <div class="d-flex align-items-center" style="cursor: pointer;">
+          <div class="task-checkbox ${task.completed ? 'completed' : ''} me-3"
+               onclick="toggleTask(${task.task_id}); event.stopPropagation();">
+            ${task.completed ? '<i class="fas fa-check text-primary"></i>' : ''}
+          </div>
+          <div class="flex-grow-1" onclick="toggleTaskDescription(${task.task_id})">
+            <span class="task-text">${task.title}</span>
+          </div>
+          <span class="text-muted small me-3">${formatDate(task.completionDate)}</span>
+          <button class="btn btn-sm btn-outline-danger"
+                  onclick="deleteTask(${task.task_id}); event.stopPropagation();"
+                  title="Delete task">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+        <!-- Hidden description; toggled via toggleTaskDescription() -->
+        <div class="task-description" id="desc-${task.task_id}"
+             style="display: none; padding: 8px 16px; border-top: 1px solid #eee;">
+          ${task.description}
+        </div>
+      </div>
+    `)
+    .join('');
+}
+
+// Toggling the display of task descriptions when a task is clicked.
+function toggleTaskDescription(taskId) {
+  const descElement = document.getElementById(`desc-${taskId}`);
+  if (descElement) {
+    // Toggle display between none and block.
+    descElement.style.display = (descElement.style.display === 'none' || descElement.style.display === '')
+      ? 'block'
+      : 'none';
+  }
+}
+
+// Basic live search functionality.
 function setupSearch() {
   const searchInput = document.getElementById('searchInput');
   searchInput.addEventListener('input', function() {
     const searchTerm = this.value.toLowerCase();
-    // Filter tasks by searching in the title (case-insensitive)
     const filteredTasks = tasks.filter(task =>
       task.title.toLowerCase().includes(searchTerm)
     );
@@ -241,7 +270,7 @@ function setupSearch() {
   });
 }
 
-// Updates the UI element that shows the count of remaining (incomplete) tasks.
+// Update the UI element that shows the count of remaining (incomplete) tasks.
 function updateRemainingTasks() {
   const remainingCount = tasks.filter(task => !task.completed).length;
   const remainingElement = document.getElementById('remainingTasks');

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Taskmaster Settings</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* Smooth transitions for theme and color changes */
+        body, .card {
+          transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        /* Light mode styles */
+        body {
+          background-color: #f8f9fa;
+          color: #212529;
+        }
+        /* Dark mode styles */
+        body.dark-mode {
+          background-color: #343a40;
+          color: #f8f9fa;
+        }
+        /* Adjust card elements in dark mode */
+        body.dark-mode .card {
+          background-color: #495057;
+          color: #f8f9fa;
+          border-color: #6c757d;
+        }
+        body.dark-mode .card-header,
+        body.dark-mode .card-footer {
+          background-color: #495057;
+          color: #f8f9fa;
+          border-color: #6c757d;
+        }
+        /* Define a primary color variable */
+        :root {
+          --primary-color: #007bff;
+        }
+        /* Override Bootstrap primary button colors using the variable */
+        .btn-primary {
+          background-color: var(--primary-color) !important;
+          border-color: var(--primary-color) !important;
+        }
+        /* Styles for custom color scheme buttons */
+        .color-scheme-btn {
+          width: 40px;
+          height: 40px;
+          border: 2px solid transparent;
+          border-radius: 50%;
+          display: inline-block;
+          margin: 0.25rem;
+          cursor: pointer;
+          transition: border-color 0.2s ease;
+        }
+        .color-scheme-btn.active {
+          border-color: #fff;
+        }
+        .color-blue { background-color: #007bff; }
+        .color-red { background-color: #dc3545; }
+        .color-green { background-color: #28a745; }
+        .color-purple { background-color: #6f42c1; }
+    </style>
+</head>
+<body>
+<div class="container my-5">
+    <h2 class="mb-4">Settings</h2>
+
+    <!-- Theme and Color Scheme Settings -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header">
+            Theme Settings
+        </div>
+        <div class="card-body">
+            <!-- Dark Mode / Light Mode Toggle -->
+            <div class="form-group">
+                <label for="themeToggle">Dark Mode / Light Mode</label>
+                <div class="custom-control custom-switch">
+                    <input type="checkbox" class="custom-control-input" id="themeToggle">
+                    <label class="custom-control-label" for="themeToggle">Toggle Dark Mode</label>
+                </div>
+            </div>
+            <!-- Custom Color Scheme -->
+            <div class="form-group">
+                <label>Custom Color Scheme</label>
+                <div>
+                    <span class="color-scheme-btn color-blue" id="color-blue" onclick="setColorScheme('blue')"></span>
+                    <span class="color-scheme-btn color-red" id="color-red" onclick="setColorScheme('red')"></span>
+                    <span class="color-scheme-btn color-green" id="color-green"
+                          onclick="setColorScheme('green')"></span>
+                    <span class="color-scheme-btn color-purple" id="color-purple"
+                          onclick="setColorScheme('purple')"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reminder Alerts Settings -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header">
+            Reminder Alerts
+        </div>
+        <div class="card-body">
+            <form id="reminderForm">
+                <div class="form-group">
+                    <label>Choose Reminder Methods</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="reminderEmail">
+                        <label class="form-check-label" for="reminderEmail">Email Alerts</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="reminderSMS">
+                        <label class="form-check-label" for="reminderSMS">SMS Alerts</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="reminderPush">
+                        <label class="form-check-label" for="reminderPush">Push Notifications</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="reminderTime">Set Default Reminder Time</label>
+                    <input type="time" class="form-control" id="reminderTime">
+                </div>
+                <button type="submit" class="btn btn-primary">Save Reminder Settings</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard Button -->
+    <div class="text-center">
+        <a th:href="@{/dashboard}" class="btn btn-outline-primary">Go to Dashboard</a>
+    </div>
+</div>
+
+<!-- JavaScript -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+      // Initialize Dark Mode from localStorage
+      const themeToggle = document.getElementById('themeToggle');
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+        themeToggle.checked = true;
+      } else {
+        document.body.classList.remove('dark-mode');
+        themeToggle.checked = false;
+      }
+
+      // Listen for theme toggle changes
+      themeToggle.addEventListener('change', function() {
+        if (this.checked) {
+          document.body.classList.add('dark-mode');
+          localStorage.setItem('theme', 'dark');
+        } else {
+          document.body.classList.remove('dark-mode');
+          localStorage.setItem('theme', 'light');
+        }
+      });
+
+      // Load the saved color scheme from localStorage and set the active color
+      const savedColor = localStorage.getItem('colorScheme') || 'blue';
+      setColorScheme(savedColor);
+
+      // Reminder settings form submission
+      document.getElementById('reminderForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const emailAlert = document.getElementById('reminderEmail').checked;
+        const smsAlert = document.getElementById('reminderSMS').checked;
+        const pushAlert = document.getElementById('reminderPush').checked;
+        const reminderTime = document.getElementById('reminderTime').value;
+        const reminderSettings = {
+          email: emailAlert,
+          sms: smsAlert,
+          push: pushAlert,
+          time: reminderTime
+        };
+        localStorage.setItem('reminderSettings', JSON.stringify(reminderSettings));
+        alert("Reminder settings saved!");
+      });
+    });
+
+    // Function to change the custom color scheme
+    function setColorScheme(scheme) {
+      // Remove active class from all color scheme buttons
+      document.getElementById('color-blue').classList.remove('active');
+      document.getElementById('color-red').classList.remove('active');
+      document.getElementById('color-green').classList.remove('active');
+      document.getElementById('color-purple').classList.remove('active');
+
+      // Add active class to the selected color-button
+      document.getElementById(`color-${scheme}`).classList.add('active');
+
+      // Remove previous custom color scheme classes from body
+      document.body.classList.remove('custom-blue', 'custom-red', 'custom-green', 'custom-purple');
+      // Optionally, add a custom class (here for potential additional styling)
+      document.body.classList.add(`custom-${scheme}`);
+
+      // Update the CSS variable for the primary color
+      let primaryColor;
+      if (scheme === 'red') {
+        primaryColor = '#dc3545';
+      } else if (scheme === 'green') {
+        primaryColor = '#28a745';
+      } else if (scheme === 'purple') {
+        primaryColor = '#6f42c1';
+      } else {
+        primaryColor = '#007bff'; // default blue
+      }
+      document.documentElement.style.setProperty('--primary-color', primaryColor);
+      localStorage.setItem('colorScheme', scheme);
+    }
+</script>
+
+<!-- Optional JavaScript and Bootstrap Bundle -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
