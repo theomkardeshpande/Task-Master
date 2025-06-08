@@ -3,7 +3,6 @@ let tasks = [];
 // When the DOM is loaded, perform initializations
 document.addEventListener('DOMContentLoaded', function() {
     fetchUserData();
-    updateUserUI();
     loadTasks(); // Fetch tasks from the server
     setupSearch();
 });
@@ -13,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // ============================================
 async function fetchUserData() {
     try {
-        const response = await fetch('/api/user/profile');
+        const response = await fetch('/user/profile');
         if (response.ok) {
             const userSession = await response.json();
             localStorage.setItem('userSession', JSON.stringify(userSession)); // Store in localStorage
@@ -26,32 +25,45 @@ async function fetchUserData() {
     }
 }
 
+
 function updateUserUI(userSession) {
     if (userSession) {
-        const userNames=document.querySelectorAll('.fullname').forEach(el => el.textContent = userSession.fullname);
-        const userEmails=document.querySelectorAll('.email').forEach(el => el.textContent = userSession.email);
-        userNames.forEach(element => {
-                    if (element.textContent === 'John Doe') {
-                        element.textContent = userSession.fullname;
-                    }
-                });
-                userEmails.forEach(element => {
-                    if (element.textContent === 'john@example.com') {
-                        element.textContent = userSession.email;
-                    }
-                });
+        document.querySelectorAll('.fullname').forEach(el => {
+            if (el.textContent === 'John Doe' || el.textContent.trim() === '') {
+                el.textContent = userSession.fullname;
+            }
+        });
+
+        document.querySelectorAll('.email').forEach(el => {
+            if (el.textContent === 'john@example.com' || el.textContent.trim() === '') {
+                el.textContent = userSession.email;
+            }
+        });
     }
 }
 
-// Call this function when the page loads
-document.addEventListener('DOMContentLoaded', fetchUserData);
+function signOut() {
+    if (confirm('Are you sure you want to sign out?')) {
+        localStorage.removeItem('userSession');
+        fetch("/logout", {
+                method: "POST",
+                credentials: "same-origin"
+            }).then(response => {
+                if (response.ok) {
+                    window.location.href = "/login?logout"; // Redirect after logout
+                } else {
+                    console.error("Logout failed!");
+                }
+            });
+    }
+}
 
 // ============================================
 // Tasks API Functions
 // ============================================
 async function loadTasks() {
     try {
-        const response = await fetch('/api/tasks');
+        const response = await fetch('/api/showAllTasks');
         if (response.ok) {
             tasks = await response.json();
             renderTasks(tasks);
@@ -63,74 +75,62 @@ async function loadTasks() {
         console.error('Error fetching tasks:', error);
     }
 }
-
 async function addTask() {
     const titleInput = document.getElementById('taskTitle');
     const descriptionInput = document.getElementById('taskDescription');
+    const completionDateInput = document.getElementById('completionDate');
 
     const title = titleInput.value.trim();
     const description = descriptionInput.value.trim();
+    const date = completionDateInput.value.trim();
+    const formatedDate=new Date(date).toISOString();
 
-    if (!title || !description) {
+    console.log("title:",title);
+    console.log("description:",description);
+    console.log("date:",formatedDate);
+
+    if (!title || !description || !date) {
         showToast('Please fill in all fields', 'danger');
         return;
     }
 
     try {
-        const response = await fetch('/api/tasks', {
+        const data={
+            taskTitle: title,
+            taskDescription: description,
+            completionDate: formatedDate
+        };
+        const response = await fetch('/api/addTask', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: new URLSearchParams({
-                taskTitle: title,
-                taskDescription: description
-            })
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
         });
 
-        if (response.ok) {
-            const newTask = await response.json();
-            tasks.unshift(newTask);
-            renderTasks(tasks);
-            updateRemainingTasks();
-            // Clear the form fields
-            titleInput.value = '';
-            descriptionInput.value = '';
-
-            // Hide modal (assumes Bootstrap Modal)
-            const modalElement = document.getElementById('addTaskModal');
-            const modalInstance = window.bootstrap.Modal.getInstance(modalElement);
-            if (modalInstance) {
-                modalInstance.hide();
-            }
-            showToast('Task added successfully!', 'success');
-        } else {
-            showToast('Failed to add task', 'danger');
+        if (!response.ok) {
+            throw new Error(`Server responded with ${response.status}: ${response.statusText}`);
         }
+
+        const newTask = await response.json();
+        tasks.unshift(newTask);
+        renderTasks(tasks);
+        updateRemainingTasks();
+
+        // Clear form fields
+        titleInput.value = '';
+        descriptionInput.value = '';
+        completionDateInput.value = '';
+
+        // Hide modal (Bootstrap-based)
+        const modalElement = document.getElementById('addTaskModal');
+        const modalInstance = window.bootstrap.Modal.getInstance(modalElement);
+        if (modalInstance) {
+            modalInstance.hide();
+        }
+
+        showToast('Task added successfully!', 'success');
     } catch (error) {
         console.error('Error adding task:', error);
-        showToast('Error occurred while adding task', 'danger');
-    }
-}
-
-async function toggleTask(taskId) {
-    try {
-        const response = await fetch(`/api/tasks/${taskId}/toggle`, {
-            method: 'PUT'
-        });
-        if (response.ok) {
-            const updatedTask = await response.json();
-            tasks = tasks.map(task => task.task_id === updatedTask.task_id ? updatedTask : task);
-            renderTasks(tasks);
-            updateRemainingTasks();
-            const message = updatedTask.completed ? 'Task completed!' : 'Task marked as incomplete';
-            showToast(message, updatedTask.completed ? 'success' : 'info');
-        } else {
-            showToast('Failed to toggle task', 'danger');
-        }
-    } catch (error) {
-        console.error('Error toggling task:', error);
-        showToast('Error occurred while toggling task', 'danger');
+        showToast(`Error occurred: ${error.message}`, 'danger');
     }
 }
 
@@ -154,10 +154,51 @@ async function deleteTask(taskId) {
         }
     }
 }
+// ============================================
+// ToggleTask
+// ============================================
 
+function toggleTask(taskId) {
+  // Find the index of the task in the global tasks array
+  const taskIndex = tasks.findIndex(task => task.task_id === taskId);
+  if (taskIndex === -1) {
+    return;
+  }
+
+  // Call the backend endpoint to toggle the task.
+  // We assume the backend toggles the `completed` status internally.
+  fetch(`/api/tasks/toggle/${taskId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    // No payload is needed if the server is toggling the state itself.
+    body: JSON.stringify({})
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error("Failed to update task");
+    }
+    return response.json();
+  })
+  .then(updatedTask => {
+    // Update the local tasks array with the updated task returned from the server.
+    tasks[taskIndex] = updatedTask;
+    // Re-render the tasks list and update remaining tasks count.
+    renderTasks();
+    updateRemainingTasks();
+    const message = updatedTask.completed ? 'Task completed!' : 'Task marked as incomplete';
+    showToast(message, updatedTask.completed ? 'success' : 'warning');
+  })
+  .catch(err => {
+    showToast("Could not update task", "error");
+    console.error(err);
+  });
+}
 // ============================================
 // UI Rendering & Utility Functions
 // ============================================
+// Renders the tasks list in the UI.
 function renderTasks(tasksToRender = tasks) {
     const tasksList = document.getElementById('tasksList');
 
@@ -174,7 +215,7 @@ function renderTasks(tasksToRender = tasks) {
     tasksList.innerHTML = tasksToRender.map(task => `
         <div class="task-list-item d-flex align-items-center ${task.completed ? 'completed' : ''}" data-task-id="${task.task_id}">
             <div class="task-checkbox ${task.completed ? 'completed' : ''} me-3" onclick="toggleTask(${task.task_id})">
-                ${task.completed ? '<i class="fas fa-check"></i>' : ''}
+                ${task.completed ? '<i class="fas fa-check text-primary"></i>' : ''}
             </div>
             <div class="flex-grow-1">
                 <span class="task-text">${task.title}</span>
@@ -187,23 +228,26 @@ function renderTasks(tasksToRender = tasks) {
     `).join('');
 }
 
+// Sets up the live search functionality.
 function setupSearch() {
-    const searchInput = document.getElementById('searchInput');
-    searchInput.addEventListener('input', function() {
-        const searchTerm = this.value.toLowerCase();
-        const filteredTasks = tasks.filter(task =>
-            task.title.toLowerCase().includes(searchTerm)
-        );
-        renderTasks(filteredTasks);
-    });
+  const searchInput = document.getElementById('searchInput');
+  searchInput.addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase();
+    // Filter tasks by searching in the title (case-insensitive)
+    const filteredTasks = tasks.filter(task =>
+      task.title.toLowerCase().includes(searchTerm)
+    );
+    renderTasks(filteredTasks);
+  });
 }
 
+// Updates the UI element that shows the count of remaining (incomplete) tasks.
 function updateRemainingTasks() {
-    const remainingCount = tasks.filter(task => !task.completed).length;
-    const remainingElement = document.getElementById('remainingTasks');
-    if (remainingElement) {
-        remainingElement.textContent = remainingCount;
-    }
+  const remainingCount = tasks.filter(task => !task.completed).length;
+  const remainingElement = document.getElementById('remainingTasks');
+  if (remainingElement) {
+    remainingElement.textContent = remainingCount;
+  }
 }
 
 // ============================================

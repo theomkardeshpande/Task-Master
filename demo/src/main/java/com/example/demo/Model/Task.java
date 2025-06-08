@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -25,7 +25,7 @@ public class Task {
 
     private boolean isCompleted;
 
-    private Date completionDate;
+    private LocalDateTime completionDate;
 
     private String userEmail;
 }
