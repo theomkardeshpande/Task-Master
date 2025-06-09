@@ -1,0 +1,347 @@
+/* Import the main styles */
+@import url('styles.css');
+
+/* Settings page specific styles */
+.settings-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.settings-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding: 2rem 0;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+    color: white;
+    border-radius: var(--border-radius);
+}
+
+.settings-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.settings-header p {
+    opacity: 0.9;
+    font-size: 1.1rem;
+}
+
+/* Enhanced card styling */
+.settings-card {
+    background: var(--light-card-bg);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    margin-bottom: 2rem;
+    overflow: hidden;
+    transition: all var(--transition-speed) ease;
+}
+
+.settings-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--box-shadow-lg);
+}
+
+body.dark-mode .settings-card {
+    background: var(--dark-card-bg);
+}
+
+.settings-card-header {
+    background: rgba(var(--primary-color-rgb), 0.1);
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--light-border);
+    font-weight: 600;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+}
+
+.settings-card-header i {
+    margin-right: 0.75rem;
+    color: var(--primary-color);
+    font-size: 1.3rem;
+}
+
+body.dark-mode .settings-card-header {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--dark-border);
+}
+
+.settings-card-body {
+    padding: 2rem;
+}
+
+/* Enhanced form controls */
+.form-group {
+    margin-bottom: 2rem;
+}
+
+.form-group label {
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    display: block;
+    color: var(--light-text);
+}
+
+body.dark-mode .form-group label {
+    color: var(--dark-text);
+}
+
+/* Custom switch styling */
+.custom-switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.custom-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.switch-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 34px;
+}
+
+.switch-slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+input:checked + .switch-slider {
+    background-color: var(--primary-color);
+}
+
+input:checked + .switch-slider:before {
+    transform: translateX(26px);
+}
+
+/* Enhanced color scheme buttons */
+.color-scheme-container {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+}
+
+.color-scheme-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: all 0.3s ease;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.color-scheme-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.color-scheme-btn.active {
+    border-color: white;
+    box-shadow: 0 0 0 3px var(--primary-color);
+}
+
+.color-scheme-btn.active::after {
+    content: '\f00c';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    color: white;
+    font-size: 1.2rem;
+}
+
+.color-blue { background-color: #007bff; }
+.color-red { background-color: #dc3545; }
+.color-green { background-color: #28a745; }
+.color-purple { background-color: #6f42c1; }
+.color-orange { background-color: #fd7e14; }
+
+/* Reminder settings */
+.reminder-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.reminder-option {
+    background: var(--light-hover);
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.reminder-option:hover {
+    border-color: var(--primary-color);
+}
+
+.reminder-option.selected {
+    background: rgba(var(--primary-color-rgb), 0.1);
+    border-color: var(--primary-color);
+}
+
+body.dark-mode .reminder-option {
+    background: var(--dark-hover);
+}
+
+.reminder-option i {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+/* Time input styling */
+.time-input-group {
+    position: relative;
+    margin-top: 1rem;
+}
+
+.time-input-group input[type="time"] {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--light-border);
+    border-radius: var(--border-radius);
+    background: var(--light-card-bg);
+    color: var(--light-text);
+    font-size: 1rem;
+}
+
+body.dark-mode .time-input-group input[type="time"] {
+    background: var(--dark-secondary-bg);
+    border-color: var(--dark-border);
+    color: var(--dark-text);
+}
+
+/* Action buttons */
+.settings-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 3rem;
+    flex-wrap: wrap;
+}
+
+.settings-actions .btn {
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    border-radius: var(--border-radius);
+    transition: all 0.3s ease;
+}
+
+.settings-actions .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Success message */
+.settings-success {
+    background: var(--success-color);
+    color: white;
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    margin-bottom: 2rem;
+    display: none;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .settings-container {
+        padding: 1rem;
+    }
+
+    .settings-header {
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+    }
+
+    .settings-header h1 {
+        font-size: 2rem;
+    }
+
+    .settings-card-body {
+        padding: 1.5rem;
+    }
+
+    .color-scheme-container {
+        justify-content: center;
+    }
+
+    .reminder-options {
+        grid-template-columns: 1fr;
+    }
+
+    .settings-actions {
+        flex-direction: column;
+    }
+
+    .settings-actions .btn {
+        width: 100%;
+    }
+}
+
+/* Loading states */
+.settings-loading {
+    text-align: center;
+    padding: 2rem;
+}
+
+.settings-loading .spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+/* Animations */
+.fade-in {
+    animation: fadeIn 0.5s ease;
+}
+
+.slide-up {
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
