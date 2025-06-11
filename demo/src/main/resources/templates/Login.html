@@ -9,26 +9,35 @@
     <link th:href="@{/css/styles.css}" rel="stylesheet">
     <script lang="javascript">
         document.addEventListener('DOMContentLoaded', function() {
-            // Password toggle functionality
-            const passwordToggles = document.querySelectorAll('.password-toggle');
-            passwordToggles.forEach(toggle => {
-                toggle.addEventListener('click', function() {
-                    const passwordInput = this.previousElementSibling;
-                    const icon = this.querySelector('i');
+          // Password toggle functionality
+          const passwordToggles = document.querySelectorAll('.password-toggle');
+          passwordToggles.forEach(toggle => {
+            toggle.addEventListener('click', function() {
+              const passwordInput = this.previousElementSibling;
+              const icon = this.querySelector('i');
 
-                    if (passwordInput.type === 'password') {
-                        passwordInput.type = 'text';
-                        icon.classList.remove('fa-eye');
-                        icon.classList.add('fa-eye-slash');
-                    } else {
-                        passwordInput.type = 'password';
-                        icon.classList.remove('fa-eye-slash');
-                        icon.classList.add('fa-eye');
-                    }
-                });
+              if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+              } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+              }
             });
+          });
         });
     </script>
+    <!-- Inline style for increasing modal size; this can be placed in your styles.css file -->
+    <style>
+        .auth-container {
+          max-width: 600px; /* Increase as needed */
+          width: 100%;
+          margin: 0 auto;
+          padding: 1rem;
+        }
+    </style>
 </head>
 <body class="auth-page">
 <!-- Navigation -->
@@ -56,23 +65,15 @@
                 <form id="signinForm" th:action="@{/login}" th:method="post" novalidate>
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" name="email" id="email" placeholder="you@example.com"
-                               required>
+                        <input type="email" class="form-control" name="email" id="email" placeholder="you@example.com" required>
                         <div class="invalid-feedback"></div>
                     </div>
 
                     <div class="mb-3">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <label for="password" class="form-label">Password</label>
-                            <a th:href="@{/forgotPassword}" class="text-primary text-decoration-none small">Forgot
-                                password?</a>
-                        </div>
+                        <label for="password" class="form-label">Password</label>
                         <div class="position-relative">
-                            <input type="password" class="form-control" name="password" id="password"
-                                   placeholder="••••••••" required>
-                            <button type="button"
-                                    class="btn btn-link position-absolute end-0 top-50 translate-middle-y password-toggle"
-                                    style="border: none; background: none;">
+                            <input type="password" class="form-control" name="password" id="password" placeholder="••••••••" required>
+                            <button type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y password-toggle" style="border: none; background: none;">
                                 <i class="fas fa-eye text-muted"></i>
                             </button>
                         </div>
@@ -84,6 +85,11 @@
                         Sign In
                     </button>
                 </form>
+
+                <!-- ✅ Forgot Password Link Moved Outside the Form -->
+                <div class="text-center mt-3">
+                    <a th:href="@{/forgot-password}" class="text-primary text-decoration-none small">Forgot password?</a>
+                </div>
 
                 <div class="text-center">
                     <p class="text-muted small mb-0">
@@ -104,6 +110,5 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<!--<script src="/static/js/auth.js"></script>-->
 </body>
 </html>
