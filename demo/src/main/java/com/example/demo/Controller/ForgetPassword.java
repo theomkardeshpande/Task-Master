@@ -2,13 +2,12 @@ package com.example.demo.Controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 public class ForgetPassword {
 
     @GetMapping("/forgot-password")
-    public String forgotPasswordPage(){
+    public String forgotPasswordPage() {
         return "forgot-password";
     }
 }

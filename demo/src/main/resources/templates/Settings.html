@@ -42,37 +42,6 @@
         </div>
     </div>
 
-    <!-- Reminder Alerts Settings -->
-    <div class="card mb-4 shadow-sm">
-        <div class="card-header">
-            Reminder Alerts
-        </div>
-        <div class="card-body">
-            <form id="reminderForm">
-                <div class="form-group">
-                    <label>Choose Reminder Methods</label>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="reminderEmail">
-                        <label class="form-check-label" for="reminderEmail">Email Alerts</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="reminderSMS">
-                        <label class="form-check-label" for="reminderSMS">SMS Alerts</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="reminderPush">
-                        <label class="form-check-label" for="reminderPush">Push Notifications</label>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="reminderTime">Set Default Reminder Time</label>
-                    <input type="time" class="form-control" id="reminderTime">
-                </div>
-                <button type="submit" class="btn btn-primary">Save Reminder Settings</button>
-            </form>
-        </div>
-    </div>
-
     <!-- Dashboard Button -->
     <div class="text-center">
         <a th:href="@{/dashboard}" class="btn btn-outline-primary">Go to Dashboard</a>

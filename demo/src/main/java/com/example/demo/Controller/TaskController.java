@@ -7,7 +7,6 @@ import com.example.demo.Repository.TaskRepo;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -30,7 +29,7 @@ public class TaskController {
      */
     @GetMapping("/showAllTasks")
     public ResponseEntity<List<Task>> getUserTasks(@AuthenticationPrincipal CustomUserDetails currentUser,
-                                                   @RequestParam(required = false) String search) {
+            @RequestParam(required = false) String search) {
         String email = currentUser.getUsername();
         List<Task> tasks = taskRepository.findByUserEmail(email);
 
@@ -47,8 +46,10 @@ public class TaskController {
      * Expects payload with "taskTitle" and "taskDescription".
      */
     @PostMapping("/addTask")
-    public ResponseEntity<?> addTask(@RequestBody TaskRequest taskRequest, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        if (taskRequest.getTaskTitle() == null || taskRequest.getTaskDescription() == null || taskRequest.getCompletionDate() == null) {
+    public ResponseEntity<?> addTask(@RequestBody TaskRequest taskRequest,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        if (taskRequest.getTaskTitle() == null || taskRequest.getTaskDescription() == null
+                || taskRequest.getCompletionDate() == null) {
             return ResponseEntity.badRequest().build();
         }
         Task task = new Task();
@@ -63,13 +64,12 @@ public class TaskController {
         return ResponseEntity.ok(savedTask);
     }
 
-
     /**
      * Endpoint to toggle task completion status.
      */
     @PutMapping("/tasks/toggle/{task_id}")
     public ResponseEntity<Task> toggleTask(@PathVariable("task_id") int id,
-                                           @AuthenticationPrincipal UserDetails currentUser) {
+            @AuthenticationPrincipal CustomUserDetails currentUser) {
         Optional<Task> optTask = taskRepository.findById(id);
         if (optTask.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -97,7 +97,7 @@ public class TaskController {
      */
     @DeleteMapping("/tasks/{taskId}")
     public ResponseEntity<Void> deleteTask(@PathVariable("taskId") int id,
-                                           @AuthenticationPrincipal CustomUserDetails currentUser) {
+            @AuthenticationPrincipal CustomUserDetails currentUser) {
         Optional<Task> optTask = taskRepository.findById(id);
         if (optTask.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -111,5 +111,31 @@ public class TaskController {
 
         taskRepository.delete(task);
         return ResponseEntity.ok().build();
+    }
+
+    // @GetMapping("/tasks/editTaskButton/{task_id}")
+    // public ResponseEntity<Task> editTaskButton(@RequestBody @PathVariable("task_id") int id,
+    //         @AuthenticationPrincipal CustomUserDetails currentUser) {
+
+    //     Optional<Task> optTask = taskRepository.findById(id);
+    //     if (optTask.isEmpty()) {
+    //         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    //     }
+
+    //     Task task = optTask.get();
+
+    //     // Ensure the task belongs to the authenticated user
+    //     if (!task.getUserEmail().equals(currentUser.getUsername())) {
+    //         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    //     }
+
+    //     return ResponseEntity.ok(task);
+    // }
+
+    @PutMapping("/tasks/updateTask")
+    public ResponseEntity<?> updateTask(@RequestBody TaskRequest taskRequest,
+            @AuthenticationPrincipal CustomUserDetails currentUser) {
+                ResponseEntity<?>entity=this.addTask(taskRequest, currentUser);
+                return entity;
     }
 }

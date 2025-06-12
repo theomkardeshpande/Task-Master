@@ -1,4 +1,4 @@
-// ============================================
+﻿// ============================================
 // Global Variables & State Management
 // ============================================
 let tasks = [];
@@ -261,8 +261,8 @@ async function toggleTask(taskId) {
             throw new Error("Failed to update task");
         }
 
-        const updatedTask = await response.json();
-        tasks[taskIndex].completed = updatedTask.completed; // Ensure state is updated
+        const getTask = await response.json();
+        tasks[taskIndex].completed = getTask.completed; // Ensure state is updated
 
         // Update the UI immediately
         const taskElement = document.querySelector(`[data-task-id="${taskId}"]`);
@@ -271,11 +271,11 @@ async function toggleTask(taskId) {
             const checkboxInner = checkbox.querySelector(".checkbox-inner");
 
             // Toggle the completed class
-            checkbox.classList.toggle("completed", updatedTask.completed);
-            taskElement.classList.toggle("completed", updatedTask.completed);
+            checkbox.classList.toggle("completed", getTask.completed);
+            taskElement.classList.toggle("completed", getTask.completed);
 
             // Update the tick mark inside the checkbox
-            checkboxInner.innerHTML = updatedTask.completed ? '<i class="fas fa-check text-white"></i>' : '';
+            checkboxInner.innerHTML = getTask.completed ? '<i class="fas fa-check text-white"></i>' : '';
 
             // Update task list and stats
             updateRemainingTasks();
@@ -283,14 +283,89 @@ async function toggleTask(taskId) {
         }
 
         // ✅ Fix: Ensure correct toast message
-        const message = updatedTask.completed
+        const message = getTask.completed
             ? '✅ Task marked as completed! 🎉'
             : 'Task marked as incomplete.';
-        showToast(message, updatedTask.completed ? 'success' : 'warning');
+        showToast(message, getTask.completed ? 'success' : 'warning');
 
     } catch (error) {
         console.error('Error toggling task:', error);
         showToast("Could not update task", "danger");
+    }
+}
+
+async function editTaskButton()
+{
+   const taskIndex = tasks.findIndex(task => task.task_id === taskId);
+       if (taskIndex === -1) return;
+
+    document.getElementById("editTaskModal").addEventListener("load",function(){
+        document.getElementById("editTitle").value=tasks[taskIndex].title;
+        document.getElementById("editCompletionDate").value=tasks[taskIndex].completionDate;
+        document.getElementById("editTaskDescription").value=tasks[taskIndex].description;
+    });
+
+}
+
+async function updateTask(){
+    const taskIndex = tasks.findIndex(task => task.task_id === globalTask_id);
+        if (taskIndex === -1) return;
+    
+    const titleInput = document.getElementById('editTitle');
+    const descriptionInput = document.getElementById('editTaskDescription');
+    const completionDateInput = document.getElementById('editCompletionDate');
+
+    const title = titleInput.value.trim();
+    const description = descriptionInput.value.trim();
+    const date = completionDateInput.value.trim();
+
+    if (!title || !description || !date) {
+        showToast('Please fill in all fields', 'warning');
+        highlightEmptyFields([titleInput, descriptionInput, completionDateInput]);
+        return;
+    }
+
+    const formattedDate = new Date(date).toISOString();
+
+    try {
+        showButtonLoading('Edit Task', true);
+
+        const data = {
+            taskTitle: title,
+            taskDescription: description,
+            completionDate: formattedDate
+        };
+
+        const response = await fetch('/api/tasks/updateTask', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+
+        if (!response.ok) {
+            throw new Error(`Server responded with ${response.status}: ${response.statusText}`);
+        }
+
+        const newTask = await response.json();
+        tasks.unshift(newTask);
+        renderTasks(getFilteredTasks());
+        updateRemainingTasks();
+        updateTaskStats();
+
+        // Clear form and close modal
+        clearTaskForm();
+        closeModal('editTaskModal');
+
+        showToast('Task Edited successfully!', 'success');
+
+        // Check for reminder settings
+        scheduleTaskReminder(newTask);
+
+    } catch (error) {
+        console.error('Error adding task:', error);
+        showToast(`Error occurred: ${error.message}`, 'danger');
+    } finally {
+        showButtonLoading('Edit Task', false);
     }
 }
 // ============================================
@@ -359,7 +434,7 @@ function createTaskHTML(task) {
                 </div>
                 <div class="task-actions">
                     <button class="btn btn-sm btn-outline-primary me-2"
-                            onclick="editTask(${task.task_id}); event.stopPropagation();"
+                            onclick="createEdit(${task.task_id}); event.stopPropagation();"
                             title="Edit task">
                         <i class="fas fa-edit"></i>
                     </button>
@@ -379,6 +454,7 @@ function createTaskHTML(task) {
         </div>
     `;
 }
+
 
 function getEmptyStateHTML() {
     const emptyMessages = {
@@ -420,6 +496,17 @@ function toggleTaskDescription(taskId) {
             descElement.classList.add('slide-down');
         }
     }
+}
+
+var globalTask_id;
+
+async function createEdit(task_id){
+    globalTask_id=task_id;
+    console.log("Function Executing");
+    
+    const modal = new bootstrap.Modal(document.getElementById("editTaskModal"));
+    modal.show();
+    
 }
 
 // ============================================
@@ -775,6 +862,8 @@ function setupKeyboardShortcuts() {
 // ============================================
 window.toggleTask = toggleTask;
 window.deleteTask = deleteTask;
+window.createEdit=createEdit;
+window.updateTask=updateTask;
 window.addTask = addTask;
 window.signOut = signOut;
 window.toggleTaskDescription = toggleTaskDescription;
