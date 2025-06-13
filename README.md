@@ -51,11 +51,11 @@ Before you begin, ensure you have met the following requirements:
 
 2.  **Configure the Database:**
 
-    *   Create a database named `todo_db` (or any name of your choice).
+    *   Create a database named `todo` (or any name of your choice).
     *   Update the `src/main/resources/application.properties` file with your database credentials.  For example:
 
         ```properties
-        spring.datasource.url=jdbc:mysql://localhost:3306/todo_db?useSSL=false&serverTimezone=UTC
+        spring.datasource.url=jdbc:mysql://localhost:3306/todo?useSSL=false&serverTimezone=UTC
         spring.datasource.username={your_username}
         spring.datasource.password={your_password}
         spring.jpa.hibernate.ddl-auto=update  # or create if the database is empty
