@@ -6,26 +6,27 @@ ToDo_ListApp is a web-based task management application built using Java and the
 
 ## Features and Functionality
 
-*   **User Authentication:** Secure user registration and login using Spring Security. Utilizes BCrypt password encoding.
 *   **Task Management:**
     *   Create, read, update, and delete tasks.
     *   Mark tasks as complete.
     *   Search tasks by title.
     *   Filter tasks (all, active, completed).
+*   **User Authentication:** Secure user registration and login using Spring Security. Utilizes BCrypt password encoding.
 *   **Password Reset:**  Users can request a password reset via email.  A token is generated and emailed to the user, allowing them to reset their password.
 *   **User Profile:**  Basic user profile display (fullname, email).
 *   **Theme Settings**: Dark/Light mode and color customization.
-*   **Reminders**: Option to set up task reminders (email, SMS, push notifications - though SMS functionality might require additional setup).
+
 
 ## Technology Stack
 
 *   **Java:**  Primary programming language.
 *   **Spring Boot:**  Framework for building the application.
 *   **Spring Security:**  For authentication and authorization.  `demo/src/main/java/com/example/demo/Configure/SecurityConfig.java` configures the security settings.
+*   **Spring Mail Service:** For Sending Mail Through smtp server.
 *   **JPA/Hibernate:** For database interaction.
 *   **Thymeleaf:**  Template engine for rendering dynamic HTML pages.
 *   **BCrypt:**  Password encoder. Configured in `demo/src/main/java/com/example/demo/Configure/SecurityConfig.java`.
-*   **MySQL (assumed):** The application is configured for JDBC authentication, implying a relational database.  The `SecurityConfig.java` uses a `DataSource`, suggesting MySQL or PostgreSQL could be used with appropriate configuration.
+*   **MySQL:** The application is configured for JDBC authentication, implying a relational database.  The `SecurityConfig.java` uses a `DataSource`, suggesting MySQL or PostgreSQL could be used with appropriate configuration.
 *   **HTML, CSS, JavaScript:** Front-end technologies.
 *   **Bootstrap:** CSS framework for styling.
 
@@ -55,14 +56,14 @@ Before you begin, ensure you have met the following requirements:
 
         ```properties
         spring.datasource.url=jdbc:mysql://localhost:3306/todo_db?useSSL=false&serverTimezone=UTC
-        spring.datasource.username=your_username
-        spring.datasource.password=your_password
+        spring.datasource.username={your_username}
+        spring.datasource.password={your_password}
         spring.jpa.hibernate.ddl-auto=update  # or create if the database is empty
         spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.MySQL8Dialect  # Ensure the correct dialect is set
         spring.mail.host=smtp.gmail.com
         spring.mail.port=587
-        spring.mail.username=your_email@gmail.com
-        spring.mail.password=your_email_password
+        spring.mail.username={your_email@gmail.com}
+        spring.mail.password={your_email_password}
         spring.mail.properties.mail.smtp.auth=true
         spring.mail.properties.mail.smtp.starttls.enable=true
 
@@ -88,11 +89,11 @@ Before you begin, ensure you have met the following requirements:
     java -jar demo/target/demo-0.0.1-SNAPSHOT.jar
     ```
 
-    The application will start on `http://localhost:8080`.  You might need to adjust the port in `application.properties` using `server.port=8081` if port 8080 is already in use.
+    The application will start on `http://localhost:8081`.  You might need to adjust the port in `application.properties` using `server.port=8081` if port 8080 is already in use.
 
 ## Usage Guide
 
-1.  **Access the application:** Open your web browser and navigate to `http://localhost:8080`.
+1.  **Access the application:** Open your web browser and navigate to `http://localhost:8081`.
 2.  **Registration:** If you don't have an account, click on the "Sign Up" link and fill in the registration form (`/register`). The `RegisterValidator` (`demo/src/main/java/com/example/demo/Controller/RegisterValidator.java`) enforces email and password validation.
 3.  **Login:**  Enter your registered email and password on the login page (`/login`).  The `SecurityConfig.java` configures form-based login.
 4.  **Dashboard:**  After successful login, you will be redirected to the dashboard (`/dashboard`), where you can view, add, edit and manage your tasks.
@@ -204,4 +205,4 @@ No license has been specified for this project. All rights are reserved by the o
 
 ## Contact/Support Information
 
-For questions, support, or feature requests, please contact: theomkardeshpande@example.com (replace with the actual email).
+For questions, support, or feature requests, please contact: omkardeshpande34@gmail.com
