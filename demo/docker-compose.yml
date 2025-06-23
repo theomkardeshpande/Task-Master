@@ -15,6 +15,8 @@ services:
       - "3306:3306"
     volumes:
       - demo_mysql_data:/var/lib/mysql:rw
+    networks:
+      - jenkins
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_ROOT_PASS}"]
       interval: 10s

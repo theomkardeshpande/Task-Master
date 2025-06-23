@@ -51,7 +51,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/register", "/static/**", "/", "/css/**", "/js/**", "/api/**","/auth/**","/forgot-password").permitAll()
+                        .requestMatchers("/login", "/register", "/static/**", "/", "/css/**", "/js/**", "/api/**","/auth/**","/forgot-password","/actuator/prometheus").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
