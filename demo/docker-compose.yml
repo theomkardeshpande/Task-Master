@@ -19,6 +19,8 @@ services:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_ROOT_PASS}"]
       interval: 10s
       retries: 5
+    networks:
+      - "jenkins-net"
 
   jenkins:
     image: jenkins/jenkins:lts
@@ -36,8 +38,6 @@ services:
     env_file: .env
     ports:
       - "8081:8081"
-    networks:
-      - jenkins-net
     depends_on:
       db:
         condition: service_healthy
@@ -75,3 +75,7 @@ volumes:
   grafana_data:
   demo_mysql_data:
   jenkins_home:
+
+networks:
+  jenkins-net:
+    driver: bridge
