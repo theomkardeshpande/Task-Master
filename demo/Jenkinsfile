@@ -12,7 +12,9 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git url: 'git@github.com:theomkardeshpande/ToDo_ListApp.git',
+                // Specify the branch if necessary (e.g., branch 'main')
+                git branch: 'NewMaster',
+                    url: 'git@github.com:theomkardeshpande/ToDo_ListApp.git',
                     credentialsId: 'github-credentials'
             }
         }
@@ -25,20 +27,31 @@ pipeline {
         }
 
         stage('Deploy') {
-          steps {
-            withCredentials([usernamePassword(credentialsId: 'db-credentials',
-                                              usernameVariable: 'DB_USER',
-                                              passwordVariable: 'DB_PASS')]) {
-              sh '''
-                echo "Launching Spring Boot App against MySQL..."
-                java -jar target/app.jar \
-                  --spring.datasource.username=$DB_USER \
-                  --spring.datasource.password=$DB_PASS \
-                  --spring.datasource.url=jdbc:mysql://mysql_db:3306/todo
-              '''
+            steps {
+                // Retrieve both database and mail credentials using withCredentials
+                withCredentials([
+                    usernamePassword(credentialsId: 'db-credentials',
+                                     usernameVariable: 'DB_USER',
+                                     passwordVariable: 'DB_PASS'),
+                    usernamePassword(credentialsId: 'mail-credentials',
+                                     usernameVariable: 'MAIL_USER',
+                                     passwordVariable: 'MAIL_PASS')
+                ]) {
+                    // Launch the Spring Boot application, passing the required parameters
+                    sh '''
+                        echo "Launching Spring Boot App against MySQL with Mail Config..."
+                        java -jar target/app.jar \
+                          --spring.datasource.username=$DB_USER \
+                          --spring.datasource.password=$DB_PASS \
+                          --spring.datasource.url=jdbc:mysql://mysql_db:3306/todo \
+                          --spring.mail.username=$MAIL_USER \
+                          --spring.mail.password=$MAIL_PASS \
+                          --spring.mail.host=smtp.example.com \
+                          --spring.mail.port=587
+                    '''
+                }
             }
-          }
-}
+        }
     }
 
     post {

@@ -24,6 +24,7 @@ services:
 
   jenkins:
     image: jenkins/jenkins:lts
+    container_name: jenkins-container
     ports:
       - "8085:8080"
       - "50000:50000"
