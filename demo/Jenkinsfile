@@ -21,8 +21,10 @@ pipeline {
 
         stage('Build & Test') {
             steps {
+                dir('demo'){
                 sh 'mvn clean package'
                 sh 'mvn test'
+                }
             }
         }
 
