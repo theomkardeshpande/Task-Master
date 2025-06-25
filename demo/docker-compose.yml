@@ -1,9 +1,9 @@
-version: '3.8'
+
 
 services:
 
   db:
-    image: mysql:8
+    image: mysql
     container_name: mysql_db
     restart: unless-stopped
     environment:
@@ -22,17 +22,6 @@ services:
     networks:
       - "jenkins-net"
 
-  jenkins:
-    image: jenkins/jenkins:lts
-    container_name: jenkins-container
-    ports:
-      - "8085:8080"
-      - "50000:50000"
-    volumes:
-      - jenkins_home:/var/jenkins_home
-    networks:
-      - "jenkins-net"
-
   todo:
     build:
       context: .
@@ -41,6 +30,8 @@ services:
     env_file: .env
     ports:
       - "8081:8081"
+    networks:
+      - "jenkins-net"
     depends_on:
       db:
         condition: service_healthy
