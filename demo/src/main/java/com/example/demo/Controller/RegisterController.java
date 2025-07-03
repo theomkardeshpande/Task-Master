@@ -4,6 +4,8 @@ import com.example.demo.Model.AppUser;
 import com.example.demo.Service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,6 +13,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 
 @Controller
@@ -48,11 +51,22 @@ public class RegisterController {
         appUser.setEmail(user.getEmail());
         appUser.setPassword(passwordEncoder.encode(user.getPassword()));
         appUser.setRole("USER");
+        appUser.setVerified(false);
 
-        userService.saveUser(appUser);
+        userService.registerUser(appUser);
         System.out.println("Saving user: " + appUser);
         model.addAttribute("message", "User Successfully Registered..!");
         return "redirect:/login?success=true";
+    }
+
+    @GetMapping("/verify-account")
+    public ResponseEntity<String> verifyAccount(@RequestParam("token") String token) {
+        String result = userService.verifyAccount(token);
+        if (result.startsWith("Success")) {
+            return ResponseEntity.ok(result);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+        }
     }
 
 }
