@@ -46,7 +46,8 @@ public class PasswordResetService {
     }
 
     private void sendResetLinkEmail(String email,String token){
-        String resetLink="http://${DOMAIN_NAME:localhost}/auth/reset-password?token=" + token;
+        String domain=System.getenv("DOMAIN_NAME");
+        String resetLink="http://"+domain+"/auth/reset-password?token=" + token;
         SimpleMailMessage message=new SimpleMailMessage();
         message.setTo(email);
         message.setSubject("Reset Your Task Master Password");

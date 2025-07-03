@@ -34,4 +34,6 @@ public class AppUser {
 
     private String role;
 
+    private boolean verified;
+
 }
