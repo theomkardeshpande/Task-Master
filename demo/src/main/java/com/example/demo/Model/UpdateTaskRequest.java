@@ -6,8 +6,9 @@ import lombok.Data;
 import java.time.LocalDate;
 
 @Data
-public class TaskRequest {
+public class UpdateTaskRequest {
 
+    private int taskId;
     private String taskTitle;
     private String taskDescription;
 

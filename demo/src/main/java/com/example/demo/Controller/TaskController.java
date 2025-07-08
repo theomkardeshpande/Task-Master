@@ -3,13 +3,14 @@ package com.example.demo.Controller;
 import com.example.demo.Model.CustomUserDetails;
 import com.example.demo.Model.Task;
 import com.example.demo.Model.TaskRequest;
+import com.example.demo.Model.UpdateTaskRequest;
 import com.example.demo.Repository.TaskRepo;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import java.util.List;
 import java.util.Optional;
@@ -85,7 +86,7 @@ public class TaskController {
         // Toggle the completion status and update the completion date
         boolean newCompletionStatus = !task.isCompleted();
         task.setCompleted(newCompletionStatus);
-        task.setCompletionDate(newCompletionStatus ? LocalDateTime.now() : null);
+        task.setCompletionDate(newCompletionStatus ? LocalDate.now() : null);
 
         // Save the updated task
         Task savedTask = taskRepository.save(task);
@@ -113,29 +114,29 @@ public class TaskController {
         return ResponseEntity.ok().build();
     }
 
-    // @GetMapping("/tasks/editTaskButton/{task_id}")
-    // public ResponseEntity<Task> editTaskButton(@RequestBody @PathVariable("task_id") int id,
-    //         @AuthenticationPrincipal CustomUserDetails currentUser) {
-
-    //     Optional<Task> optTask = taskRepository.findById(id);
-    //     if (optTask.isEmpty()) {
-    //         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-    //     }
-
-    //     Task task = optTask.get();
-
-    //     // Ensure the task belongs to the authenticated user
-    //     if (!task.getUserEmail().equals(currentUser.getUsername())) {
-    //         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-    //     }
-
-    //     return ResponseEntity.ok(task);
-    // }
-
     @PutMapping("/tasks/updateTask")
-    public ResponseEntity<?> updateTask(@RequestBody TaskRequest taskRequest,
-            @AuthenticationPrincipal CustomUserDetails currentUser) {
-                ResponseEntity<?>entity=this.addTask(taskRequest, currentUser);
-                return entity;
+    public ResponseEntity<Task> updateTask(@RequestBody UpdateTaskRequest updateRequest,
+    @AuthenticationPrincipal CustomUserDetails currentUser){
+        
+        Optional<Task> optTask = taskRepository.findById(updateRequest.getTaskId());
+        if (optTask.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        Task task = optTask.get();
+
+        // Ensure the task belongs to the authenticated user
+        if (!task.getUserEmail().equals(currentUser.getUsername())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        // task.setTask_id(updateRequest.getTaskId());
+        task.setTitle(updateRequest.getTaskTitle());
+        task.setDescription(updateRequest.getTaskDescription());
+        task.setCompletionDate(updateRequest.getCompletionDate());
+
+        Task updatedSaved=taskRepository.save(task);
+        return ResponseEntity.ok(updatedSaved);
     }
+
 }

@@ -195,8 +195,11 @@
             <div class="modal-body">
                 <form id="editTaskForm">
                     <div class="mb-3">
+                        <input type="hidden" class="form-control" name="editId" id="editId"/>
+                        
                         <label for="taskTitle" class="form-label">Task Title</label>
                         <input type="text" class="form-control" name="editTitle" id="editTitle" placeholder="Enter task title" required>
+                        
                         <label for="completionDate" class="form-label">Task Completion Date</label>
                         <input type="date" class="form-control" name="editCompletionDate"  id="editCompletionDate" placeholder="CompletionDate"
                                required>
@@ -210,7 +213,7 @@
             </div>
             <div class="edit-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="updateTask()">Update Task</button>
+                <button type="button" class="update-btn btn btn-primary" id="updateTask" onclick="updateTask()" >Update Task</button>
             </div>
         </div>
     </div>

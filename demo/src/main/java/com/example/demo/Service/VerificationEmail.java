@@ -13,7 +13,7 @@ public class VerificationEmail {
 
     public void sendVerificationEmail(String toEmail, String token) {
         String subject = "Email Verification";
-        String domain=System.getenv("DOMAIN_NAME");
+        String domain=System.getenv("API_BASE_URL");
         String confirmationUrl = "http://"+domain+"/verify-account?token=" + token;
         String message = "Thank you for registering.\n Please Login With Your Account and link below to verify your account.";
 

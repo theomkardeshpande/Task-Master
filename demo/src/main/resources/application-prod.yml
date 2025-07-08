@@ -1,0 +1,62 @@
+
+server:
+  port: ${SERVER_PORT}
+
+spring:
+  profile: prod
+  application:
+    name: TodoApp
+    api:
+      base-url:  ${API_BASE_URL:http://localhost:8081}
+
+  datasource:
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+    #url: jdbc:mysql://localhost:3306/
+    username: ${DB_USER}
+    password: ${DB_PASS}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  thymeleaf:
+    cache: false
+  devtools:
+    restart:
+      enabled: true
+    livereload:
+      enabled: true
+
+  mail:
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    username: ${MAIL_USER}
+    password: ${MAIL_PASS}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          debug: false
+
+logging:
+  level:
+    com:
+      myapp: DEBUG
+    org:
+      springframework: INFO
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+    base-path: /actuator
+  endpoint:
+    prometheus:
+      enabled: true
