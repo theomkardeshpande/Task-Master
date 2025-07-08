@@ -167,7 +167,7 @@ async function addTask() {
         return;
     }
 
-    const formattedDate = new Date(date).toISOString();
+    const formattedDate = new Date(date).toISOString().split("T")[0];
 
     try {
         showButtonLoading('Add Task', true);
@@ -294,27 +294,14 @@ async function toggleTask(taskId) {
     }
 }
 
-async function editTaskButton()
-{
-   const taskIndex = tasks.findIndex(task => task.task_id === taskId);
-       if (taskIndex === -1) return;
-
-    document.getElementById("editTaskModal").addEventListener("load",function(){
-        document.getElementById("editTitle").value=tasks[taskIndex].title;
-        document.getElementById("editCompletionDate").value=tasks[taskIndex].completionDate;
-        document.getElementById("editTaskDescription").value=tasks[taskIndex].description;
-    });
-
-}
-
 async function updateTask(){
-    const taskIndex = tasks.findIndex(task => task.task_id === globalTask_id);
-        if (taskIndex === -1) return;
-    
+
+    const editId=document.getElementById('editId');
     const titleInput = document.getElementById('editTitle');
     const descriptionInput = document.getElementById('editTaskDescription');
     const completionDateInput = document.getElementById('editCompletionDate');
 
+    const taskId = editId.value.trim();
     const title = titleInput.value.trim();
     const description = descriptionInput.value.trim();
     const date = completionDateInput.value.trim();
@@ -324,13 +311,12 @@ async function updateTask(){
         highlightEmptyFields([titleInput, descriptionInput, completionDateInput]);
         return;
     }
-
-    const formattedDate = new Date(date).toISOString();
-
+    const formattedDate = new Date(date).toISOString().split("T")[0];
     try {
         showButtonLoading('Edit Task', true);
 
         const data = {
+            taskId: taskId,
             taskTitle: title,
             taskDescription: description,
             completionDate: formattedDate
@@ -346,20 +332,32 @@ async function updateTask(){
             throw new Error(`Server responded with ${response.status}: ${response.statusText}`);
         }
 
-        const newTask = await response.json();
-        tasks.unshift(newTask);
+        const updatedTask = await response.json();
+        const idx = tasks.findIndex(t => t.task_id === updatedTask.task_id);
+
+        if (idx !== -1) {
+        tasks[idx] = updatedTask;  // Replace the old with updated
+        } else {
+        tasks.unshift(updatedTask); // Optionally add if not found
+        }
+        
         renderTasks(getFilteredTasks());
         updateRemainingTasks();
         updateTaskStats();
 
         // Clear form and close modal
-        clearTaskForm();
+        document.getElementById("editId").value='';
+        document.getElementById("editTitle").value='';
+        document.getElementById("editTaskDescription").value='';
+        document.getElementById("editCompletionDate").value='';
+
         closeModal('editTaskModal');
+        // updateModal.hide();
 
         showToast('Task Edited successfully!', 'success');
 
         // Check for reminder settings
-        scheduleTaskReminder(newTask);
+        scheduleTaskReminder(updatedTask);
 
     } catch (error) {
         console.error('Error adding task:', error);
@@ -368,6 +366,7 @@ async function updateTask(){
         showButtonLoading('Edit Task', false);
     }
 }
+
 // ============================================
 // UI Rendering & Utility Functions
 // ============================================
@@ -433,8 +432,8 @@ function createTaskHTML(task) {
                     </div>
                 </div>
                 <div class="task-actions">
-                    <button class="btn btn-sm btn-outline-primary me-2"
-                            onclick="createEdit(${task.task_id}); event.stopPropagation();"
+                    <button class="edit-btn btn btn-sm btn-outline-primary me-2"
+                             onclick="createEdit(${task.task_id})" ; event.stopPropagation();"
                             title="Edit task">
                         <i class="fas fa-edit"></i>
                     </button>
@@ -498,15 +497,23 @@ function toggleTaskDescription(taskId) {
     }
 }
 
-var globalTask_id;
 
-async function createEdit(task_id){
-    globalTask_id=task_id;
-    console.log("Function Executing");
+function createEdit(id){
+
+    const updateModal = new bootstrap.Modal(
+        document.getElementById("editTaskModal")
+    );
     
-    const modal = new bootstrap.Modal(document.getElementById("editTaskModal"));
-    modal.show();
+    const task = tasks.find(t => t.task_id === id);
+    if (!task) return;
     
+    document.getElementById("editId").value=task.task_id;
+    document.getElementById("editTitle").value = task.title;
+    document.getElementById("editTaskDescription").value = task.description;
+    document.getElementById("editCompletionDate").valueAsDate  = new Date(task.completionDate);
+  
+    updateModal.show();
+
 }
 
 // ============================================
@@ -730,6 +737,7 @@ function highlightEmptyFields(fields) {
 
 function showButtonLoading(buttonText, isLoading) {
     const addButton = document.querySelector('#addTaskModal .btn-primary');
+    const editButton = document.querySelector('#editTaskModal .update-btn');
     if (addButton) {
         if (isLoading) {
             addButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Adding...';
@@ -737,6 +745,16 @@ function showButtonLoading(buttonText, isLoading) {
         } else {
             addButton.innerHTML = buttonText;
             addButton.disabled = false;
+        }
+    }
+
+    if (editButton) {
+        if (isLoading) {
+            editButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Updating...';
+            editButton.disabled = true;
+        } else {
+            editButton.innerHTML = buttonText;
+            editButton.disabled = false;
         }
     }
 }
