@@ -1,6 +1,6 @@
 package com.example.demo.Controller;
 
-import com.example.demo.Model.PasswordResetRequest;
+import com.example.demo.Dto.PasswordResetRequest;
 import com.example.demo.Service.PasswordResetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

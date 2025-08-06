@@ -1,9 +1,9 @@
 package com.example.demo.Controller;
 
+import com.example.demo.Dto.TaskRequest;
+import com.example.demo.Dto.UpdateTaskRequest;
 import com.example.demo.Model.CustomUserDetails;
 import com.example.demo.Model.Task;
-import com.example.demo.Model.TaskRequest;
-import com.example.demo.Model.UpdateTaskRequest;
 import com.example.demo.Repository.TaskRepo;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

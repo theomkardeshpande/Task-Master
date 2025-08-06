@@ -1,0 +1,117 @@
+/* Google OAuth Button Styles */
+.oauth-container {
+    margin-bottom: 1.5rem;
+}
+
+/* Custom Google Button Enhancement */
+#google-signin-btn {
+    position: relative;
+    overflow: hidden;
+}
+
+#google-signin-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+#google-signin-btn:hover::before {
+    left: 100%;
+}
+
+/* Loading Spinner */
+.spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #ffffff;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Enhanced animations */
+@keyframes slide-in-bottom {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.animate-slide-in-bottom {
+    animation: slide-in-bottom 0.6s ease-out;
+}
+
+.animate-fade-in {
+    animation: fade-in 0.8s ease-out;
+}
+
+/* Toast notifications */
+.oauth-toast {
+    min-width: 300px;
+    max-width: 500px;
+    word-wrap: break-word;
+}
+
+/* Responsive design for Google button */
+@media (max-width: 640px) {
+    #google-signin-btn {
+        padding: 12px 16px;
+        font-size: 14px;
+    }
+    
+    #google-signin-btn svg {
+        width: 18px;
+        height: 18px;
+        margin-right: 8px;
+    }
+}
+
+/* Focus styles for accessibility */
+#google-signin-btn:focus-visible {
+    outline: none;
+    ring-width: 2px;
+    ring-offset-width: 2px;
+    ring-color: #3b82f6;
+}
+
+/* Hover effects */
+#google-signin-btn:hover {
+    border-color: #d1d5db;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Disabled state */
+#google-signin-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+#google-signin-btn:disabled:hover {
+    background-color: #ffffff;
+    border-color: #d1d5db;
+    transform: none;
+}

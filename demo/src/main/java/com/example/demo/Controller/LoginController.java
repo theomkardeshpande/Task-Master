@@ -1,26 +1,41 @@
 package com.example.demo.Controller;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.web.bind.annotation.*;
+import com.example.demo.Security.JwtUtil;
+import com.example.demo.Dto.LoginRequest;
+import com.example.demo.Dto.LoginResponse;
 
-@Controller
+@RestController
+@RequestMapping("/auth")
 public class LoginController {
 
-    @GetMapping("/login")
-    public String loginPage(
-            Model model,
-            @RequestParam(value = "error", required = false) String error,
-            @RequestParam(value = "logout", required = false) String logout) {
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
-        if (error != null) {
-            model.addAttribute("errorMsg", "Invalid email or password. Please try again.");
-        }
-        if (logout != null) {
-            model.addAttribute("message", "You have been logged out successfully.");
-        }
+    @Autowired
+    private JwtUtil jwtUtil;
 
-        return "Login";
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                    loginRequest.getEmail(), loginRequest.getPassword()
+                )
+            );
+            // Optionally, generate JWT or HttpSession here
+            String token=jwtUtil.generateToken(loginRequest.getEmail());
+            // Return minimal, safe user info
+            return ResponseEntity.ok(new LoginResponse(token));
+        } catch (AuthenticationException ex) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+        }
     }
 }

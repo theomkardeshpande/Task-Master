@@ -12,7 +12,6 @@ spring:
   ########################################################################
   ##  DATABASE  (MySQL example)
   ########################################################################
-  #spring:
   datasource:
     url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:todo}
     #url: jdbc:mysql://localhost:3306/
@@ -28,7 +27,6 @@ spring:
   ########################################################################
   ##  THYMELEAF & DEVTOOLS
   ########################################################################
-  #spring:
   thymeleaf:
     cache: false
   devtools:
@@ -37,20 +35,9 @@ spring:
     livereload:
       enabled: true
 
-########################################################################
-##  LOGGING
-########################################################################
-logging:
-  level:
-    com:
-      myapp: DEBUG
-    org:
-      springframework: INFO
-
   ########################################################################
   ##  MAIL (Gmail example)
   ########################################################################
-  spring:
   mail:
     host: ${MAIL_HOST:smtp.gmail.com}
     port: ${MAIL_PORT:587}
@@ -63,6 +50,17 @@ logging:
           starttls:
             enable: true
           debug: false
+
+########################################################################
+##  LOGGING
+########################################################################
+logging:
+  level:
+    com:
+      myapp: DEBUG
+    org:
+      springframework.web: INFO
+
 
 management:
   endpoints:

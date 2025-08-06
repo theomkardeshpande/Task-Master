@@ -8,6 +8,6 @@ public class SettingsController {
 
     @GetMapping("/settings")
     public String settingsPage() {
-        return "Settings";
+        return "settings";
     }
 }

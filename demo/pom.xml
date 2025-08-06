@@ -5,10 +5,10 @@
         <profile>
             <id>dev</id>
             <properties>
-                <db.user>dev_user</db.user>
-                <db.pass>dev_password</db.pass>
-                <mail.user>dev@example.com</mail.user>
-                <mail.pass>dev_mail_password</mail.pass>
+                <db.user>${DB_USER}</db.user>
+                <db.pass>${DB_PASS}</db.pass>
+                <mail.user>${MAIL_USER}</mail.user>
+                <mail.pass>${MAIL_PASS}</mail.pass>
             </properties>
         </profile>
 
@@ -73,6 +73,23 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>0.11.5</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>0.11.5</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId> <!-- or jjwt-gson if you prefer -->
+            <version>0.11.5</version>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
