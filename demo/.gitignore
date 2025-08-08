@@ -1,5 +1,6 @@
 HELP.md
 .env
+keystore.p12
 .gitignore
 target/
 .mvn/wrapper/maven-wrapper.jar

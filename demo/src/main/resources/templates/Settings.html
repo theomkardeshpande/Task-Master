@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -117,10 +117,11 @@
                                 <i class="fas fa-user text-white text-2xl"></i>
                             </div>
                             <div>
-                                <button type="button" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200">
+                                <input type="file" id="profile-picture-input" accept="image/*" class="hidden" />
+                                <button type="button" id="change-avatar-btn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200">
                                     Change Avatar
                                 </button>
-                                <p class="text-sm text-slate-500 mt-1">JPG, PNG or GIF (max. 2MB)</p>
+                                <p class="text-sm text-slate-500 mt-1">JPG, PNG (max. 2MB)</p>
                             </div>
                         </div>
                         
@@ -456,6 +457,6 @@
     </main>
 
     <!-- JavaScript -->
-    <script src="@{/static/js/settings.js}"></script>
+    <script th:src="@{/js/newsettings.js}"></script>
 </body>
 </html>

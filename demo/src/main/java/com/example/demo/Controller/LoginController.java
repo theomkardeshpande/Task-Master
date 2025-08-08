@@ -1,5 +1,7 @@
 package com.example.demo.Controller;
 
+import java.time.LocalDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,9 +35,21 @@ public class LoginController {
             // Optionally, generate JWT or HttpSession here
             String token=jwtUtil.generateToken(loginRequest.getEmail());
             // Return minimal, safe user info
-            return ResponseEntity.ok(new LoginResponse(token));
+            LoginResponse response=new LoginResponse(token);
+            response.setEmail(loginRequest.getEmail());
+            response.setLoginTime(LocalDateTime.now());
+            response.setName(authentication.getName());
+            
+            return ResponseEntity.ok(response);
         } catch (AuthenticationException ex) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         }
+    }
+
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout() {
+        // No backend state to clear with stateless JWT
+        return ResponseEntity.ok("Logged out (client should delete JWT)");
     }
 }

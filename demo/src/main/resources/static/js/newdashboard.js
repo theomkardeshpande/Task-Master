@@ -1,4 +1,3 @@
-// Dashboard JavaScript functionality
 document.addEventListener("DOMContentLoaded", () => {
   initializeDashboard()
 })
@@ -19,7 +18,6 @@ function initializeDashboard() {
 }
 
 function initializeDateInputs() {
-  // Set minimum date to today
   const today = new Date().toISOString().split("T")[0]
   document.getElementById("task-due-date").setAttribute("min", today)
   document.getElementById("edit-task-due-date").setAttribute("min", today)
@@ -33,29 +31,17 @@ function initializeDarkMode() {
 
 function checkAuthentication() {
   const userData = localStorage.getItem("taskmaster_user") || sessionStorage.getItem("taskmaster_user")
-
   if (!userData) {
     window.location.href = "login.html"
     return
   }
 }
 
-//function loadUserData() {
-//  const userData = JSON.parse(localStorage.getItem("taskmaster_user") || sessionStorage.getItem("taskmaster_user"))
-//
-//  if (userData) {
-//    const greeting = document.getElementById("user-greeting")
-//    const name = userData.fullname || userData.name || "User"
-//    greeting.textContent = `Welcome back, ${name.split(" ")[0]}!`
-//    greeting.classList.remove("hidden")
-//  }
-//}
 async function loadUserData() {
-  await fetch('/user/profile') // Your backend endpoint to get current user info
+  await fetch('/user/profile')
     .then(res => res.json())
     .then(userData => {
       if (userData) {
-        console.log(userData)
         localStorage.setItem("taskmaster_user", JSON.stringify(userData))
         const greeting = document.getElementById("user-greeting");
         const name = userData.fullname || userData.name || "User";
@@ -68,53 +54,14 @@ async function loadUserData() {
     });
 }
 
-
-//function loadTasks() {
-//  const savedTasks = localStorage.getItem("taskmaster_tasks")
-//  if (savedTasks) {
-//    tasks = JSON.parse(savedTasks)
-//  } else {
-//    // Add some sample tasks for demo
-//    tasks = [
-//      {
-//        id: generateId(),
-//        title: "Complete project proposal",
-//        description: "Finish the quarterly project proposal for the client meeting",
-//        priority: "high",
-//        dueDate: null,
-//        completed: false,
-//        createdAt: new Date().toISOString(),
-//      },
-//      {
-//        id: generateId(),
-//        title: "Review team updates",
-//        description: "Go through the weekly team status updates",
-//        priority: "medium",
-//        dueDate: null,
-//        completed: false,
-//        createdAt: new Date().toISOString(),
-//      },
-//      {
-//        id: generateId(),
-//        title: "Update documentation",
-//        description: "Update the project documentation with recent changes",
-//        priority: "low",
-//        dueDate: null,
-//        completed: true,
-//        createdAt: new Date().toISOString(),
-//      },
-//    ]
-//    saveTasks()
-//  }
-//}
 function loadTasks() {
-  fetch('/api/showAllTasks') // Your backend endpoint to get tasks
+  fetch('/api/showAllTasks')
     .then(res => res.json())
     .then(data => {
       tasks = data || []
-      tasks=JSON.parse(data)
       saveTasks()
       renderTasks()
+      updateStats()
     })
     .catch(err => {
       console.error("Failed to load tasks:", err);
@@ -122,47 +69,34 @@ function loadTasks() {
 }
 
 function setupEventListeners() {
-  // Add task form
   document.getElementById("add-task-form").addEventListener("submit", handleAddTask)
-
-  // Filter buttons
   document.querySelectorAll(".filter-btn").forEach((btn) => {
     btn.addEventListener("click", handleFilterChange)
   })
-
-  // Priority filter buttons
   document.querySelectorAll(".priority-filter-btn").forEach((btn) => {
     btn.addEventListener("click", handlePriorityFilterChange)
   })
-
-  // User menu
   document.getElementById("user-menu-btn").addEventListener("click", toggleUserMenu)
   document.getElementById("logout-btn").addEventListener("click", handleLogout)
   document.getElementById("dark-mode-toggle").addEventListener("click", toggleDarkMode)
-
-  // Edit modal
   document.getElementById("close-modal").addEventListener("click", closeEditModal)
   document.getElementById("cancel-edit").addEventListener("click", closeEditModal)
   document.getElementById("edit-task-form").addEventListener("submit", handleEditTask)
 
-  // Close user menu when clicking outside
   document.addEventListener("click", (event) => {
     const userMenu = document.getElementById("user-menu")
     const userMenuBtn = document.getElementById("user-menu-btn")
-
     if (!userMenuBtn.contains(event.target) && !userMenu.contains(event.target)) {
       closeUserMenu()
     }
   })
 
-  // Close modal when clicking outside
   document.getElementById("edit-modal").addEventListener("click", function (event) {
     if (event.target === this) {
       closeEditModal()
     }
   })
 
-  // Keyboard shortcuts
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
       closeEditModal()
@@ -173,36 +107,17 @@ function setupEventListeners() {
 
 function handlePriorityFilterChange(event) {
   const priority = event.target.dataset.priority
-
-  // Toggle priority filter
   if (currentPriorityFilter === priority) {
     currentPriorityFilter = null
-    event.target.classList.remove(
-      "bg-red-100",
-      "text-red-700",
-      "bg-yellow-100",
-      "text-yellow-700",
-      "bg-green-100",
-      "text-green-700",
-    )
+    event.target.classList.remove("bg-red-100","text-red-700","bg-yellow-100","text-yellow-700","bg-green-100","text-green-700")
     event.target.classList.add("bg-slate-200", "text-slate-700")
   } else {
-    // Clear other priority filters
     document.querySelectorAll(".priority-filter-btn").forEach((btn) => {
-      btn.classList.remove(
-        "bg-red-100",
-        "text-red-700",
-        "bg-yellow-100",
-        "text-yellow-700",
-        "bg-green-100",
-        "text-green-700",
-      )
+      btn.classList.remove("bg-red-100","text-red-700","bg-yellow-100","text-yellow-700","bg-green-100","text-green-700")
       btn.classList.add("bg-slate-200", "text-slate-700")
     })
-
     currentPriorityFilter = priority
     event.target.classList.remove("bg-slate-200", "text-slate-700")
-
     if (priority === "high") {
       event.target.classList.add("bg-red-100", "text-red-700")
     } else if (priority === "medium") {
@@ -211,50 +126,9 @@ function handlePriorityFilterChange(event) {
       event.target.classList.add("bg-green-100", "text-green-700")
     }
   }
-
   renderTasks()
 }
 
-//function handleAddTask(event) {
-//  event.preventDefault()
-//
-//  const formData = new FormData(event.target)
-//  const title = formData.get("title").trim()
-//  const description = formData.get("description").trim()
-//  const priority = formData.get("priority")
-//  const dueDate = formData.get("dueDate")
-//
-//  if (!title) return
-//
-//  const newTask = {
-//    id: generateId(),
-//    title: title,
-//    description: description,
-//    priority: priority,
-//    dueDate: dueDate || null,
-//    completed: false,
-//    createdAt: new Date().toISOString(),
-//  }
-//
-//  tasks.unshift(newTask)
-//  saveTasks()
-//  updateStats()
-//  renderTasks()
-//
-//  // Reset form
-//  event.target.reset()
-//
-//  // Show success message
-//  showNotification("Task added successfully!", "success")
-//
-//  // Add animation to new task
-//  setTimeout(() => {
-//    const taskElement = document.querySelector(`[data-task-id="${newTask.id}"]`)
-//    if (taskElement) {
-//      taskElement.classList.add("animate-slide-in-bottom")
-//    }
-//  }, 100)
-//}
 function handleAddTask(event) {
   event.preventDefault();
   const formData = new FormData(event.target)
@@ -262,8 +136,10 @@ function handleAddTask(event) {
     title: formData.get("title").trim(),
     description: formData.get("description").trim(),
     priority: formData.get("priority").trim(),
-    completionDate: formData.get("completionDate") || null,
+    dueDate: formData.get("dueDate") || null,
+    createdDate:new Date().toISOString()
   }
+  console.log(taskData)
   fetch('/api/addTask', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -277,37 +153,76 @@ function handleAddTask(event) {
     renderTasks()
     event.target.reset()
     showNotification("Task added successfully!", "success")
+    console.log(newTask)
   })
   .catch(err => console.error('Error adding task:', err))
 }
 
-
 function handleFilterChange(event) {
   const filter = event.target.dataset.filter
   currentFilter = filter
-
-  // Update button states
   document.querySelectorAll(".filter-btn").forEach((btn) => {
     btn.classList.remove("bg-blue-600", "text-white")
     btn.classList.add("bg-slate-200", "text-slate-700")
   })
-
   event.target.classList.remove("bg-slate-200", "text-slate-700")
   event.target.classList.add("bg-blue-600", "text-white")
-
   renderTasks()
 }
 
+//function toggleTask(taskId) {
+//  const task = tasks.find((t) => t.id === taskId)
+//  if (task) {
+//    task.completed = !task.completed
+//    saveTasks()
+//    updateStats()
+//    renderTasks()
+//    const action = task.completed ? "completed" : "reopened"
+//    showNotification(`Task ${action}!`, "success")
+//  }
+//}
 function toggleTask(taskId) {
   const task = tasks.find((t) => t.id === taskId)
   if (task) {
+    // Toggle the completion status locally
     task.completed = !task.completed
-    saveTasks()
-    updateStats()
-    renderTasks()
 
-    const action = task.completed ? "completed" : "reopened"
-    showNotification(`Task ${action}!`, "success")
+    // Prepare the update payload with the current task's fields including the new completion status
+    const updatedTask = {
+      title: task.title,
+      description: task.description,
+      priority: task.priority,
+      dueDate: task.dueDate || null,
+      completed: task.completed
+    }
+
+    // Send the update to the backend
+    fetch(`/api/tasks/${taskId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updatedTask),
+    })
+    .then(res => {
+      if (!res.ok) {
+        throw new Error(`Failed to update task status: ${res.statusText}`)
+      }
+      return res.json()
+    })
+    .then(() => {
+      // If update succeeds, save locally and update UI
+      saveTasks()
+      updateStats()
+      renderTasks()
+      const action = task.completed ? "completed" : "reopened"
+      showNotification(`Task ${action}!`, "success")
+    })
+    .catch(err => {
+      console.error('Error updating task completion status:', err)
+      // Optionally revert local toggle on failure
+      task.completed = !task.completed
+      showNotification("Failed to update task status. Please try again.", "error")
+      renderTasks()
+    })
   }
 }
 
@@ -319,23 +234,13 @@ function editTask(taskId) {
     document.getElementById("edit-task-description").value = task.description
     document.getElementById("edit-task-priority").value = task.priority
     document.getElementById("edit-task-due-date").value = task.dueDate || ""
-
     openEditModal()
   }
 }
 
-//function deleteTask(taskId) {
-//  if (confirm("Are you sure you want to delete this task?")) {
-//    tasks = tasks.filter((t) => t.id !== taskId)
-//    saveTasks()
-//    updateStats()
-//    renderTasks()
-//    showNotification("Task deleted!", "success")
-//  }
-//}
 function deleteTask(taskId) {
   if (confirm("Are you sure you want to delete this task?")) {
-    fetch("/api/tasks/${taskId}", { method: 'DELETE' })
+    fetch(`/api/tasks/${taskId}`, { method: 'DELETE' })
       .then(res => res.ok && loadTasks())
       .then(() => {
         saveTasks()
@@ -346,52 +251,26 @@ function deleteTask(taskId) {
   }
 }
 
-
-//function handleEditTask(event) {
-//  event.preventDefault()
-//
-//  const formData = new FormData(event.target)
-//  const taskId = formData.get("id") || document.getElementById("edit-task-id").value
-//  const title = formData.get("title").trim()
-//  const description = formData.get("description").trim()
-//  const priority = formData.get("priority")
-//  const dueDate = formData.get("dueDate")
-//
-//  if (!title) return
-//
-//  const task = tasks.find((t) => t.id === taskId)
-//  if (task) {
-//    task.title = title
-//    task.description = description
-//    task.priority = priority
-//    task.dueDate = dueDate || null
-//
-//    saveTasks()
-//    updateStats()
-//    renderTasks()
-//    closeEditModal()
-//
-//    showNotification("Task updated successfully!", "success")
-//  }
-//}
 function handleEditTask(event) {
   event.preventDefault()
+//  const task = tasks.find((t) => t.id === id)
   const taskId = document.getElementById("edit-task-id").value
   const formData = new FormData(event.target)
   const updatedTask = {
+    taskId:document.getElementById("edit-task-id").value,
     title: formData.get("title").trim(),
     description: formData.get("description").trim(),
     priority: formData.get("priority"),
-    completionDate: formData.get("completionDate") || null,
+    dueDate: formData.get("dueDate") || null,
   }
-  fetch("/api/tasks/${taskId}", {
+  console.log(updatedTask)
+  fetch(`/api/tasks/updateTask`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(updatedTask),
   })
   .then(res => res.json())
   .then(() => {
-    // Refresh task list from server or update local array
     saveTasks()
     loadTasks()
     closeEditModal()
@@ -399,7 +278,6 @@ function handleEditTask(event) {
   })
   .catch(err => console.error('Error updating task:', err))
 }
-
 
 function openEditModal() {
   const modal = document.getElementById("edit-modal")
@@ -409,8 +287,6 @@ function openEditModal() {
     modal.querySelector(".bg-white").classList.remove("scale-95")
     modal.querySelector(".bg-white").classList.add("scale-100")
   }, 10)
-
-  // Focus on title input
   document.getElementById("edit-task-title").focus()
 }
 
@@ -419,7 +295,6 @@ function closeEditModal() {
   modal.classList.add("opacity-0")
   modal.querySelector(".bg-white").classList.remove("scale-100")
   modal.querySelector(".bg-white").classList.add("scale-95")
-
   setTimeout(() => {
     modal.classList.add("hidden")
   }, 300)
@@ -428,7 +303,6 @@ function closeEditModal() {
 function toggleUserMenu() {
   const menu = document.getElementById("user-menu")
   const isOpen = !menu.classList.contains("hidden")
-
   if (isOpen) {
     closeUserMenu()
   } else {
@@ -439,27 +313,22 @@ function toggleUserMenu() {
 function openUserMenu() {
   const menu = document.getElementById("user-menu")
   const btn = document.getElementById("user-menu-btn")
-
   menu.classList.remove("hidden")
   setTimeout(() => {
     menu.classList.remove("opacity-0", "scale-95")
     menu.classList.add("opacity-100", "scale-100")
   }, 10)
-
   btn.setAttribute("aria-expanded", "true")
 }
 
 function closeUserMenu() {
   const menu = document.getElementById("user-menu")
   const btn = document.getElementById("user-menu-btn")
-
   menu.classList.remove("opacity-100", "scale-100")
   menu.classList.add("opacity-0", "scale-95")
-
   setTimeout(() => {
     menu.classList.add("hidden")
   }, 200)
-
   btn.setAttribute("aria-expanded", "false")
 }
 
@@ -475,7 +344,6 @@ function updateStats() {
   const total = tasks.length
   const completed = tasks.filter((t) => t.completed).length
   const pending = total - completed
-
   document.getElementById("total-tasks").textContent = total
   document.getElementById("completed-tasks").textContent = completed
   document.getElementById("pending-tasks").textContent = pending
@@ -484,58 +352,36 @@ function updateStats() {
 function renderTasks() {
   const taskList = document.getElementById("task-list")
   const emptyState = document.getElementById("empty-state")
-
   let filteredTasks = tasks
-
-  // Apply status filter
   if (currentFilter === "completed") {
     filteredTasks = filteredTasks.filter((t) => t.completed)
   } else if (currentFilter === "pending") {
     filteredTasks = filteredTasks.filter((t) => !t.completed)
   }
-
-  // Apply priority filter
   if (currentPriorityFilter) {
     filteredTasks = filteredTasks.filter((t) => t.priority === currentPriorityFilter)
   }
-
-  // Sort by due date and priority
   filteredTasks.sort((a, b) => {
-    // First sort by completion status
-    if (a.completed !== b.completed) {
-      return a.completed ? 1 : -1
-    }
-
-    // Then by due date (overdue first)
-    if (a.dueDate && b.dueDate) {
-      return new Date(a.dueDate) - new Date(b.dueDate)
-    }
+    if (a.completed !== b.completed) return a.completed ? 1 : -1
+    if (a.dueDate && b.dueDate) return new Date(a.dueDate) - new Date(b.dueDate)
     if (a.dueDate && !b.dueDate) return -1
     if (!a.dueDate && b.dueDate) return 1
-
-    // Finally by priority
     const priorityOrder = { high: 3, medium: 2, low: 1 }
     return priorityOrder[b.priority] - priorityOrder[a.priority]
   })
-
   if (filteredTasks.length === 0) {
     taskList.innerHTML = ""
     emptyState.classList.remove("hidden")
     return
   }
-
   emptyState.classList.add("hidden")
-
   taskList.innerHTML = filteredTasks.map((task) => createTaskHTML(task)).join("")
-
-  // Add event listeners to task elements
   filteredTasks.forEach((task) => {
     const taskElement = document.querySelector(`[data-task-id="${task.id}"]`)
     if (taskElement) {
       const checkbox = taskElement.querySelector(".task-checkbox")
       const editBtn = taskElement.querySelector(".edit-btn")
       const deleteBtn = taskElement.querySelector(".delete-btn")
-
       checkbox.addEventListener("click", () => toggleTask(task.id))
       editBtn.addEventListener("click", () => editTask(task.id))
       deleteBtn.addEventListener("click", () => deleteTask(task.id))
@@ -549,20 +395,15 @@ function createTaskHTML(task) {
     medium: "bg-yellow-100 text-yellow-800",
     high: "bg-red-100 text-red-800",
   }
-
   const priorityIcons = {
     low: "fa-circle",
     medium: "fa-minus-circle",
     high: "fa-exclamation-circle",
   }
-
   const priorityColor = priorityColors[task.priority] || priorityColors.medium
   const priorityIcon = priorityIcons[task.priority] || priorityIcons.medium
-
-  // Check if task is overdue
   const isOverdue = task.dueDate && new Date(task.dueDate) < new Date() && !task.completed
   const dueDateClass = isOverdue ? "text-red-600 font-medium" : "text-slate-500"
-
   return `
         <div class="task-item p-4 border border-slate-200 rounded-lg hover:shadow-md transition-all duration-200 ${task.completed ? "opacity-75" : ""} ${isOverdue ? "border-red-200 bg-red-50" : ""}" data-task-id="${task.id}">
             <div class="flex items-start space-x-3">
@@ -571,7 +412,6 @@ function createTaskHTML(task) {
                 }" ${task.completed ? 'aria-checked="true"' : 'aria-checked="false"'}>
                     ${task.completed ? '<i class="fas fa-check text-white text-xs"></i>' : ""}
                 </button>
-                
                 <div class="flex-1 min-w-0">
                     <div class="flex items-start justify-between">
                         <div class="flex-1">
@@ -604,11 +444,10 @@ function createTaskHTML(task) {
                                     : ""
                                 }
                                 <span class="text-xs text-slate-500">
-                                    ${formatDate(task.createdAt)}
+                                    ${formatDate(task.createdDate)}
                                 </span>
                             </div>
                         </div>
-                        
                         <div class="flex items-center space-x-1 ml-4">
                             <button class="edit-btn p-2 text-slate-400 hover:text-blue-600 transition-colors duration-200 rounded-lg hover:bg-blue-50" title="Edit task">
                                 <i class="fas fa-edit text-sm"></i>
@@ -629,12 +468,9 @@ function formatDueDate(dateString) {
   const today = new Date()
   const tomorrow = new Date(today)
   tomorrow.setDate(tomorrow.getDate() + 1)
-
-  // Reset time for comparison
   today.setHours(0, 0, 0, 0)
   tomorrow.setHours(0, 0, 0, 0)
   date.setHours(0, 0, 0, 0)
-
   if (date.getTime() === today.getTime()) {
     return "Today"
   } else if (date.getTime() === tomorrow.getTime()) {
@@ -655,19 +491,6 @@ function saveTasks() {
   localStorage.setItem("taskmaster_tasks", JSON.stringify(tasks))
 }
 
-//function saveTasks() {
-//  // Instead of localStorage, POST or PUT to save
-//  fetch('/api/tasks', {
-//    method: 'POST',
-//    headers: { 'Content-Type': 'application/json' },
-//    body: JSON.stringify(tasks),
-//  })
-//  .then(res => res.json())
-//  .then(() => { /* optionally update UI or confirm save */ })
-//  .catch(err => console.error('Error saving tasks:', err));
-//}
-
-
 function generateId() {
   return Date.now().toString(36) + Math.random().toString(36).substr(2)
 }
@@ -677,7 +500,6 @@ function formatDate(dateString) {
   const now = new Date()
   const diffTime = Math.abs(now - date)
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-
   if (diffDays === 1) {
     return "Today"
   } else if (diffDays === 2) {
@@ -700,12 +522,9 @@ function showNotification(message, type) {
   notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 animate-slide-down ${
     type === "success" ? "bg-green-500 text-white" : "bg-red-500 text-white"
   }`
-
   const icon = type === "success" ? "fa-check-circle" : "fa-exclamation-circle"
   notification.innerHTML = `<i class="fas ${icon} mr-2"></i>${message}`
-
   document.body.appendChild(notification)
-
   setTimeout(() => {
     notification.style.opacity = "0"
     notification.style.transform = "translateY(-20px)"
@@ -720,18 +539,15 @@ function showNotification(message, type) {
 function toggleDarkMode() {
   const currentTheme = localStorage.getItem("taskmaster_theme") || "light"
   const newTheme = currentTheme === "light" ? "dark" : "light"
-
   localStorage.setItem("taskmaster_theme", newTheme)
   applyTheme(newTheme)
   updateDarkModeToggle(newTheme)
-
   showNotification(`Switched to ${newTheme} mode`, "success")
 }
 
 function applyTheme(theme) {
   const body = document.body
   const html = document.documentElement
-
   if (theme === "dark") {
     html.classList.add("dark")
     body.classList.add("dark-mode")
@@ -745,7 +561,6 @@ function updateDarkModeToggle(theme) {
   const toggleBtn = document.getElementById("dark-mode-toggle")
   const icon = toggleBtn.querySelector("i")
   const text = toggleBtn.querySelector(".dark-mode-text")
-
   if (theme === "dark") {
     icon.className = "fas fa-sun mr-2"
     text.textContent = "Light Mode"
@@ -755,7 +570,6 @@ function updateDarkModeToggle(theme) {
   }
 }
 
-// Export functions for testing
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
     initializeDashboard,

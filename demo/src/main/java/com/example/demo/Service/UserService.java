@@ -1,5 +1,6 @@
 package com.example.demo.Service;
 
+import com.example.demo.Dto.PasswordChangeRequest;
 import com.example.demo.Repository.UserRepo;
 
 import java.time.LocalDateTime;
@@ -37,5 +38,32 @@ public class UserService {
                 user.getEmail(),
                 user.getRegisterationTime()
         );
+    }
+
+    public void changePassword(int id, PasswordChangeRequest request){
+
+        try{
+            AppUser user = userRepository.findById(id);
+            if(user==null){
+                throw new RuntimeException("User not Found");
+            }
+
+            if(!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())){
+                throw new RuntimeException("Current Password is Incorrect");
+            }
+
+            if(!request.getNewPassword().equals(request.getConfirmNewPassword())){
+                throw new RuntimeException("New Password and Confirm Password do not Match");
+            }
+
+            String hashedPassword=passwordEncoder.encode(request.getNewPassword());
+            user.setPassword(hashedPassword);
+
+            userRepository.save(user);
+
+        }catch (Exception e){
+            System.out.println(e.toString());
+        }
+
     }
 }

@@ -5,9 +5,13 @@
         <profile>
             <id>dev</id>
             <properties>
+                <!--suppress UnresolvedMavenProperty -->
                 <db.user>${DB_USER}</db.user>
+                <!--suppress UnresolvedMavenProperty -->
                 <db.pass>${DB_PASS}</db.pass>
+                <!--suppress UnresolvedMavenProperty -->
                 <mail.user>${MAIL_USER}</mail.user>
+                <!--suppress UnresolvedMavenProperty -->
                 <mail.pass>${MAIL_PASS}</mail.pass>
             </properties>
         </profile>
@@ -71,10 +75,6 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
-        <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
             <version>0.11.5</version>
@@ -90,6 +90,14 @@
             <artifactId>jjwt-jackson</artifactId> <!-- or jjwt-gson if you prefer -->
             <version>0.11.5</version>
             <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-oauth2-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -136,6 +144,11 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+            <version>3.0.0</version>
         </dependency>
     </dependencies>
 

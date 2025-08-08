@@ -141,7 +141,8 @@ async function handleLogin(event) {
     const userData = await response.json();
 
     // Store user session data based on "rememberMe" flag
-    if (userData.rememberMe) {
+    console.log(userData)
+    if (userData) {
         localStorage.setItem("taskmaster_user", JSON.stringify(userData));
     } else {
         sessionStorage.setItem("taskmaster_user", JSON.stringify(userData));

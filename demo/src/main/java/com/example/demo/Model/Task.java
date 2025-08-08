@@ -15,7 +15,7 @@ public class Task {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int task_id;
+    private int id;
 
     @NotBlank(message = "Title Couldn't be Empty")
     private String title;
@@ -23,9 +23,13 @@ public class Task {
     @NotBlank(message = "Description Couldn't be Empty")
     private String description;
 
-    private boolean isCompleted;
+    @NotBlank(message = "Priority Couldn't be Empty")
+    private String priority;
 
-    private LocalDate completionDate;
+    private boolean completed;
+
+    private LocalDate dueDate;
+    private LocalDate createdDate;
 
     private String userEmail;
 }

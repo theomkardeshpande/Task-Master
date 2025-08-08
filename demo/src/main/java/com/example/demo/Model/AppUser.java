@@ -30,13 +30,18 @@ public class AppUser {
     @NotBlank(message = "Email is Empty")
     private String email;
 
-    @NotBlank(message = "Password is Empty")
+    @Column(nullable = true)
     @Size(min = 3, message = "Password must be atleast more than 3 characters")
     private String password;
 
     private String role;
 
     private LocalDateTime registerationTime;
+
+    private String bio;
+
+    @Lob
+    private byte[] profilePicture;
 
 
 

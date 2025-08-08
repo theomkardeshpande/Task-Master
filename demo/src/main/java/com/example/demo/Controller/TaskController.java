@@ -49,15 +49,17 @@ public class TaskController {
     @PostMapping("/addTask")
     public ResponseEntity<?> addTask(@RequestBody TaskRequest taskRequest,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        if (taskRequest.getTaskTitle() == null || taskRequest.getTaskDescription() == null
-                || taskRequest.getCompletionDate() == null) {
+        if (taskRequest.getTitle() == null || taskRequest.getDescription() == null
+                || taskRequest.getDueDate() == null) {
             return ResponseEntity.badRequest().build();
         }
         Task task = new Task();
-        task.setTitle(taskRequest.getTaskTitle());
-        task.setDescription(taskRequest.getTaskDescription());
+        task.setTitle(taskRequest.getTitle());
+        task.setDescription(taskRequest.getDescription());
+        task.setPriority(taskRequest.getPriority());
+        task.setCreatedDate(taskRequest.getCreatedDate());
         task.setCompleted(false);
-        task.setCompletionDate(taskRequest.getCompletionDate());
+        task.setDueDate(taskRequest.getDueDate());
         task.setUserEmail(userDetails.getUsername());
 
         Task savedTask = taskRepository.save(task);
@@ -68,7 +70,7 @@ public class TaskController {
     /**
      * Endpoint to toggle task completion status.
      */
-    @PutMapping("/tasks/toggle/{task_id}")
+    @PutMapping("/tasks/{task_id}")
     public ResponseEntity<Task> toggleTask(@PathVariable("task_id") int id,
             @AuthenticationPrincipal CustomUserDetails currentUser) {
         Optional<Task> optTask = taskRepository.findById(id);
@@ -86,7 +88,7 @@ public class TaskController {
         // Toggle the completion status and update the completion date
         boolean newCompletionStatus = !task.isCompleted();
         task.setCompleted(newCompletionStatus);
-        task.setCompletionDate(newCompletionStatus ? LocalDate.now() : null);
+        task.setDueDate(newCompletionStatus ? LocalDate.now() : null);
 
         // Save the updated task
         Task savedTask = taskRepository.save(task);
@@ -130,10 +132,10 @@ public class TaskController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
-        // task.setTask_id(updateRequest.getTaskId());
-        task.setTitle(updateRequest.getTaskTitle());
-        task.setDescription(updateRequest.getTaskDescription());
-        task.setCompletionDate(updateRequest.getCompletionDate());
+        task.setTitle(updateRequest.getTitle());
+        task.setDescription(updateRequest.getDescription());
+        task.setDueDate(updateRequest.getDueDate());
+        task.setPriority(updateRequest.getPriority());
 
         Task updatedSaved=taskRepository.save(task);
         return ResponseEntity.ok(updatedSaved);

@@ -8,23 +8,24 @@ function initializeSettingsPage() {
   loadUserData()
   setupEventListeners()
   loadSettings()
+  changeProfilePicture()
 }
 
 function checkAuthentication() {
   const userData = localStorage.getItem("taskmaster_user") || sessionStorage.getItem("taskmaster_user")
 
   if (!userData) {
-    window.location.href = "login.html"
+    window.location.href = "/auth/login"
     return
   }
 }
 
 function loadUserData() {
-  const userData = JSON.parse(localStorage.getItem("taskmaster_user") || sessionStorage.getItem("taskmaster_user"))
+  const userData = JSON.parse(localStorage.getItem("taskmaster_user"))
 
   if (userData) {
     // Populate profile form
-    const fullName = userData.fullname || userData.name || ""
+    const fullName = userData.fullname
     const nameParts = fullName.split(" ")
 
     document.getElementById("first-name").value = nameParts[0] || ""
@@ -109,6 +110,29 @@ function handleSectionChange(event) {
   }
 }
 
+let selectedProfilePicture = null;
+function changeProfilePicture(){
+document.getElementById("change-avatar-btn").addEventListener("click", () => {
+  document.getElementById("profile-picture-input").click();
+});
+
+document.getElementById("profile-picture-input").addEventListener("change", (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    selectedProfilePicture = file;
+
+    // Optional: show preview
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const avatarDiv = document.querySelector(".w-20.h-20.bg-blue-600.rounded-full");
+      avatarDiv.innerHTML = `<img src="${e.target.result}" alt="Profile Picture" class="w-20 h-20 rounded-full object-cover" />`;
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+}
+
 function handleProfileUpdate(event) {
   event.preventDefault()
 
@@ -117,6 +141,7 @@ function handleProfileUpdate(event) {
   const lastName = formData.get("lastName").trim()
   const email = formData.get("email").trim()
   const bio = formData.get("bio").trim()
+  const profilePicture =selectedProfilePicture
 
   // Validate required fields
   if (!firstName || !email) {

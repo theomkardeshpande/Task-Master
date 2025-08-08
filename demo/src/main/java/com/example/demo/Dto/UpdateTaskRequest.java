@@ -9,9 +9,10 @@ import java.time.LocalDate;
 public class UpdateTaskRequest {
 
     private int taskId;
-    private String taskTitle;
-    private String taskDescription;
+    private String title;
+    private String description;
+    private String priority;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate completionDate;
+    private LocalDate dueDate;
 }

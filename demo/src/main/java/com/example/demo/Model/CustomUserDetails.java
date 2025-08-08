@@ -11,9 +11,8 @@ import java.util.List;
 public class CustomUserDetails implements UserDetails {
 
     private final AppUser user;
-
-    public CustomUserDetails(AppUser user) {
-        this.user = user;
+    public CustomUserDetails(AppUser user){
+        this.user=user;
     }
 
     @Override
@@ -33,4 +32,7 @@ public class CustomUserDetails implements UserDetails {
         return user.getFullname();
     }
 
+    public String getBio(){return  user.getBio();}
+
+    public byte[] getProfilePicture(){return user.getProfilePicture();}
 }
