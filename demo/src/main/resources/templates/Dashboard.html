@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - TaskMaster</title>
     <meta name="description" content="Manage your tasks efficiently with TaskMaster dashboard.">
-    
+
     <!-- Preload critical resources -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    
+
     <!-- Tailwind CSS -->
     <script  src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -23,13 +23,13 @@
             }
         }
     </script>
-    
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- Custom Styles -->
     <link rel="stylesheet" th:href="@{/css/styles.css}">
-    
+
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%233b82f6'><path d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'/></svg>">
 </head>
@@ -47,7 +47,7 @@
                     <i class="fas fa-check-circle text-2xl text-blue-600 group-hover:text-blue-700 transition-colors duration-200"></i>
                     <span class="text-xl font-bold text-slate-900">TaskMaster</span>
                 </a>
-                
+
                 <!-- User Menu -->
                 <div class="flex items-center space-x-4">
                     <span id="user-greeting" class="text-slate-600 hidden sm:block">Welcome back!</span>
@@ -56,14 +56,11 @@
                             id="user-menu-btn"
                             class="flex items-center space-x-2 p-2 rounded-lg hover:bg-slate-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                             aria-expanded="false"
-                            aria-haspopup="true"
-                        >
-                            <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                                <i class="fas fa-user text-white text-sm"></i>
-                            </div>
+                            aria-haspopup="true">
                             <i class="fas fa-chevron-down text-slate-400 text-sm"></i>
                         </button>
-                        
+                            <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center"><i class="fas fa-user text-white text-sm"></i></div>
+
                         <!-- Dropdown Menu -->
                         <div
                             id="user-menu"
@@ -109,7 +106,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="bg-white rounded-xl shadow-lg border border-slate-200 p-6 animate-fade-in">
                 <div class="flex items-center justify-between">
                     <div>
@@ -121,7 +118,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="bg-white rounded-xl shadow-lg border border-slate-200 p-6 animate-fade-in">
                 <div class="flex items-center justify-between">
                     <div>
@@ -141,7 +138,7 @@
             <div class="lg:col-span-1">
                 <div class="bg-white rounded-xl shadow-lg border border-slate-200 p-6 animate-slide-in-left">
                     <h2 class="text-xl font-semibold text-slate-900 mb-4">Add New Task</h2>
-                    
+
                     <form id="add-task-form" class="text-slate-800 space-y-4">
                         <div>
                             <label for="task-title" class="block text-sm font-medium text-slate-700 mb-2">
@@ -156,7 +153,7 @@
                                 placeholder="Enter task title"
                             >
                         </div>
-                        
+
                         <div>
                             <label for="task-description" class="block text-sm font-medium text-slate-700 mb-2">
                                 Description (Optional)
@@ -169,7 +166,7 @@
                                 placeholder="Enter task description"
                             ></textarea>
                         </div>
-                        
+
                         <div>
                             <label for="task-priority" class="block text-sm font-medium text-slate-700 mb-2">
                                 Priority
@@ -342,7 +339,7 @@
                             min=""
                         >
                     </div>
-                    
+
                     <div class="flex space-x-3 pt-4">
                         <button
                             type="submit"

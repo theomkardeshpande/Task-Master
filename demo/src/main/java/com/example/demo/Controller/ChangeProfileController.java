@@ -20,23 +20,17 @@ public class ChangeProfileController {
     private final UserService userService;
     private final UserRepo userRepository;
 
-    public ChangeProfileController(UserService userService,UserRepo userRepository)
-    {
-        this.userRepository=userRepository;
-        this.userService=userService;
+    public ChangeProfileController(UserService userService, UserRepo userRepository) {
+        this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     @PutMapping("/{userId}/profile")
-    public ResponseEntity<?> changeProfile(@PathVariable int userId, @RequestBody ProfileChangeRequest request)
-    {
-        try{
-            AppUser user=userRepository.findById(userId);
-            user.setFullname(request.getFullname());
-            user.setEmail(request.getEmail());
-            user.setBio(request.getBio());
-
+    public ResponseEntity<?> changeProfile(@PathVariable int userId, @RequestBody ProfileChangeRequest request) {
+        try {
+            userService.updatedProfileResponse(userId,request);
             return ResponseEntity.ok("Profile Information Saved");
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("ERROR");
         }
     }
@@ -57,39 +51,34 @@ public class ChangeProfileController {
     }
 
     @GetMapping("/{userId}/profile-picture")
-    public ResponseEntity<byte[]> getProfilePicture(@PathVariable int user_id){
-        AppUser user=userRepository.findById(user_id);
-        try{
-            if(user==null){
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND,"User Not Found");
-            }
-            byte[] image=user.getProfilePicture();
-
-            if(image==null || image.length==0){
-                return ResponseEntity.notFound().build();
-            }
-
-            HttpHeaders headers=new HttpHeaders();
-            headers.setContentType(MediaType.ALL);
-            headers.setContentLength(image.length);
-
-            return new ResponseEntity<>(image,headers,HttpStatus.OK);
-        }catch (Exception e)
-        {
-            System.out.println(e.toString());
+    public ResponseEntity<byte[]> getProfilePicture(@PathVariable("userId") int userId) {
+        AppUser userOpt = userRepository.findById(userId);
+        if (userOpt==null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Found");
         }
+
+        byte[] image = userOpt.getProfilePicture();
+        if (image == null || image.length == 0) {
+            return ResponseEntity.notFound().build();
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_JPEG); // Or correct type (IMAGE_PNG, etc)
+        headers.setContentLength(image.length);
+
+        return new ResponseEntity<>(image, headers, HttpStatus.OK);
     }
+
 
     @PutMapping("/{userId}/change-password")
     public ResponseEntity<?> changePassword(
             @PathVariable int userId,
             @RequestBody PasswordChangeRequest request
-            )
-    {
-        try{
-            userService.changePassword(userId,request);
+    ) {
+        try {
+            userService.changePassword(userId, request);
             return ResponseEntity.ok("Password is Updated Successfully");
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

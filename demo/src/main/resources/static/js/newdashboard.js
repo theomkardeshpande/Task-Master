@@ -32,7 +32,7 @@ function initializeDarkMode() {
 function checkAuthentication() {
   const userData = localStorage.getItem("taskmaster_user") || sessionStorage.getItem("taskmaster_user")
   if (!userData) {
-    window.location.href = "login.html"
+    window.location.href = "/auth/login"
     return
   }
 }
@@ -47,6 +47,8 @@ async function loadUserData() {
         const name = userData.fullname || userData.name || "User";
         greeting.textContent = `Welcome back, ${name.split(" ")[0]}!`;
         greeting.classList.remove("hidden");
+        console.log("USER DATA")
+        console.log(userData)
       }
     })
     .catch(err => {

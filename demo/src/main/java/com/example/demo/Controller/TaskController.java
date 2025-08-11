@@ -11,7 +11,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -29,8 +28,7 @@ public class TaskController {
      * Endpoint to retrieve all tasks for the logged-in user.
      */
     @GetMapping("/showAllTasks")
-    public ResponseEntity<List<Task>> getUserTasks(@AuthenticationPrincipal CustomUserDetails currentUser,
-            @RequestParam(required = false) String search) {
+    public ResponseEntity<List<Task>> getUserTasks(@AuthenticationPrincipal CustomUserDetails currentUser, @RequestParam(required = false) String search) {
         String email = currentUser.getUsername();
         List<Task> tasks = taskRepository.findByUserEmail(email);
 
@@ -39,7 +37,8 @@ public class TaskController {
             String searchLower = search.toLowerCase();
             tasks.removeIf(task -> !task.getTitle().toLowerCase().contains(searchLower));
         }
-        return ResponseEntity.ok(tasks);
+//        return ResponseEntity.ok(tasks);
+        return new ResponseEntity<>(tasks, HttpStatus.OK);
     }
 
     /**
@@ -47,10 +46,8 @@ public class TaskController {
      * Expects payload with "taskTitle" and "taskDescription".
      */
     @PostMapping("/addTask")
-    public ResponseEntity<?> addTask(@RequestBody TaskRequest taskRequest,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
-        if (taskRequest.getTitle() == null || taskRequest.getDescription() == null
-                || taskRequest.getDueDate() == null) {
+    public ResponseEntity<?> addTask(@RequestBody TaskRequest taskRequest, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        if (taskRequest.getTitle() == null || taskRequest.getDescription() == null || taskRequest.getDueDate() == null) {
             return ResponseEntity.badRequest().build();
         }
         Task task = new Task();
@@ -60,19 +57,20 @@ public class TaskController {
         task.setCreatedDate(taskRequest.getCreatedDate());
         task.setCompleted(false);
         task.setDueDate(taskRequest.getDueDate());
+        task.setDefaultDueDate(taskRequest.getDueDate());
         task.setUserEmail(userDetails.getUsername());
 
         Task savedTask = taskRepository.save(task);
 
-        return ResponseEntity.ok(savedTask);
+//        return ResponseEntity.ok(savedTask);
+        return new ResponseEntity<>(savedTask, HttpStatus.OK);
     }
 
     /**
      * Endpoint to toggle task completion status.
      */
     @PutMapping("/tasks/{task_id}")
-    public ResponseEntity<Task> toggleTask(@PathVariable("task_id") int id,
-            @AuthenticationPrincipal CustomUserDetails currentUser) {
+    public ResponseEntity<Task> toggleTask(@PathVariable("task_id") int id, @AuthenticationPrincipal CustomUserDetails currentUser) {
         Optional<Task> optTask = taskRepository.findById(id);
         if (optTask.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -88,19 +86,23 @@ public class TaskController {
         // Toggle the completion status and update the completion date
         boolean newCompletionStatus = !task.isCompleted();
         task.setCompleted(newCompletionStatus);
-        task.setDueDate(newCompletionStatus ? LocalDate.now() : null);
 
+        if (newCompletionStatus) {
+            task.setDueDate(LocalDate.now());
+        } else {
+            task.setDueDate(task.getDefaultDueDate());
+        }
         // Save the updated task
         Task savedTask = taskRepository.save(task);
-        return ResponseEntity.ok(savedTask);
+//        return ResponseEntity.ok(savedTask);
+        return new ResponseEntity<>(savedTask, HttpStatus.OK);
     }
 
     /**
      * Endpoint to delete a task.
      */
     @DeleteMapping("/tasks/{taskId}")
-    public ResponseEntity<Void> deleteTask(@PathVariable("taskId") int id,
-            @AuthenticationPrincipal CustomUserDetails currentUser) {
+    public ResponseEntity<?> deleteTask(@PathVariable("taskId") int id, @AuthenticationPrincipal CustomUserDetails currentUser) {
         Optional<Task> optTask = taskRepository.findById(id);
         if (optTask.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -113,13 +115,12 @@ public class TaskController {
         }
 
         taskRepository.delete(task);
-        return ResponseEntity.ok().build();
+        return new ResponseEntity<>("Task deleted successfully", HttpStatus.OK);
     }
 
     @PutMapping("/tasks/updateTask")
-    public ResponseEntity<Task> updateTask(@RequestBody UpdateTaskRequest updateRequest,
-    @AuthenticationPrincipal CustomUserDetails currentUser){
-        
+    public ResponseEntity<Task> updateTask(@RequestBody UpdateTaskRequest updateRequest, @AuthenticationPrincipal CustomUserDetails currentUser) {
+
         Optional<Task> optTask = taskRepository.findById(updateRequest.getTaskId());
         if (optTask.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -137,8 +138,9 @@ public class TaskController {
         task.setDueDate(updateRequest.getDueDate());
         task.setPriority(updateRequest.getPriority());
 
-        Task updatedSaved=taskRepository.save(task);
-        return ResponseEntity.ok(updatedSaved);
+        Task updatedSaved = taskRepository.save(task);
+//        return ResponseEntity.ok(updatedSaved);
+        return new ResponseEntity<>(updatedSaved, HttpStatus.OK);
     }
 
 }

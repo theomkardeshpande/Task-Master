@@ -1,7 +1,9 @@
 package com.example.demo.Service;
 
+import java.rmi.server.ExportException;
 import java.time.LocalDateTime;
 
+import com.example.demo.Model.CustomUserDetails;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
@@ -16,6 +18,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import com.example.demo.Model.AppUser;
 import com.example.demo.Repository.UserRepo;
 import com.example.demo.Security.JwtUtil;
+
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import io.jsonwebtoken.io.IOException;
@@ -26,9 +30,9 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
     private final JwtUtil jwtUtil;
     private final UserRepo userRepository;
-    private final UserDetailsService userDetailsService;
+    private final CustomUserDetailService userDetailsService;
 
-    public OAuth2LoginSuccessHandler(JwtUtil jwtUtil, UserRepo userRepository,UserDetailsService userDetailsService) {
+    public OAuth2LoginSuccessHandler(JwtUtil jwtUtil, UserRepo userRepository,CustomUserDetailService userDetailsService) {
         this.jwtUtil = jwtUtil;
         this.userRepository = userRepository;
         this.userDetailsService=userDetailsService;
@@ -62,10 +66,21 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
                     return userRepository.save(newUser);
                 });
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+        Optional<AppUser> userForId = userRepository.findByEmail(email);
+
+        AppUser newUser=userForId.orElseThrow(()-> new RuntimeException("User Not Found in Oauth"));
+
+        CustomUserDetails userDetails = null;
+        try {
+            userDetails = new CustomUserDetailService(userRepository).loadUserById(newUser.getUser_id());
+        } catch (Exception e) {
+            throw new RuntimeException(e+"IN OAUTH2");
+        }
+        CustomUserDetails customUserDetails= new CustomUserDetails(user);
+        System.out.println(userDetails.getUserId());
 
         // Generate JWT token
-        String token = jwtUtil.generateToken(email);
+        String token = jwtUtil.generateToken(customUserDetails);
 
         // Set token as HttpOnly cookie or in response header as preferred
         Cookie jwtCookie = new Cookie("jwt_token", token);

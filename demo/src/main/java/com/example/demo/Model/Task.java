@@ -28,6 +28,7 @@ public class Task {
 
     private boolean completed;
 
+    private LocalDate defaultDueDate;
     private LocalDate dueDate;
     private LocalDate createdDate;
 

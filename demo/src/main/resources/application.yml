@@ -6,6 +6,11 @@ server:
     key-store-type: PKCS12
     key-alias: your_key_alias
 
+app:
+  file:
+    upload-dir: ./uploads/profile-picture
+
+
 spring:
   profiles:
     active: dev

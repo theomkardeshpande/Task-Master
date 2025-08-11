@@ -3,10 +3,8 @@ package com.example.demo.Configure;
 import com.example.demo.Security.JwtAuthenticationEntryPoint;
 import com.example.demo.Security.JwtAuthenticationFilter;
 import com.example.demo.Service.CustomOAuth2UserService;
+import com.example.demo.Service.CustomUserDetailService;
 import com.example.demo.Service.OAuth2LoginSuccessHandler;
-
-import javax.sql.DataSource;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,11 +15,13 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import javax.sql.DataSource;
 
 @Configuration
 @EnableWebSecurity
@@ -33,14 +33,17 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+    private final CustomUserDetailService customUserDetailService;
 
     public SecurityConfig(
             DataSource dataSource,
             JwtAuthenticationEntryPoint unauthorizedHandler,
             JwtAuthenticationFilter jwtAuthenticationFilter,
             CustomOAuth2UserService customOAuth2UserService,
-            OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler) {
+            OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler,
+            CustomUserDetailService customUserDetailService) {
         this.dataSource = dataSource;
+        this.customUserDetailService = customUserDetailService;
         this.unauthorizedHandler = unauthorizedHandler;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.customOAuth2UserService = customOAuth2UserService;
@@ -52,19 +55,29 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    //    @Bean
+//    public AuthenticationManager authenticationManager(HttpSecurity http, PasswordEncoder passwordEncoder)
+//            throws Exception {
+//        AuthenticationManagerBuilder authBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
+//        authBuilder.jdbcAuthentication()
+//                .dataSource(dataSource)
+//                .usersByUsernameQuery(
+//                        "SELECT email AS principal, password AS credentials, TRUE FROM app_user WHERE email = ?")
+//                .authoritiesByUsernameQuery("SELECT email AS principal, role FROM app_user WHERE email = ?")
+//                .rolePrefix("ROLE_")
+//                .passwordEncoder(passwordEncoder);
+//        return authBuilder.build();
+//    }
     @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http, PasswordEncoder passwordEncoder)
-            throws Exception {
+    public AuthenticationManager authenticationManager(HttpSecurity http, PasswordEncoder passwordEncoder) throws Exception {
         AuthenticationManagerBuilder authBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
-        authBuilder.jdbcAuthentication()
-                .dataSource(dataSource)
-                .usersByUsernameQuery(
-                        "SELECT email AS principal, password AS credentials, TRUE FROM app_user WHERE email = ?")
-                .authoritiesByUsernameQuery("SELECT email AS principal, role FROM app_user WHERE email = ?")
-                .rolePrefix("ROLE_")
+
+        authBuilder.userDetailsService(customUserDetailService)
                 .passwordEncoder(passwordEncoder);
+
         return authBuilder.build();
     }
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

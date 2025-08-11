@@ -2,6 +2,11 @@ package com.example.demo.Controller;
 
 import java.time.LocalDateTime;
 
+import com.example.demo.Model.CustomUserDetails;
+import com.example.demo.Security.JwtUtil;
+import com.example.demo.Dto.LoginRequest;
+import com.example.demo.Dto.LoginResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,9 +15,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
-import com.example.demo.Security.JwtUtil;
-import com.example.demo.Dto.LoginRequest;
-import com.example.demo.Dto.LoginResponse;
 
 @RestController
 @RequestMapping("/auth")
@@ -25,31 +27,55 @@ public class LoginController {
     private JwtUtil jwtUtil;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
         try {
+            // Authenticate user
             Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                    loginRequest.getEmail(), loginRequest.getPassword()
-                )
+                    new UsernamePasswordAuthenticationToken(
+                            loginRequest.getEmail(),
+                            loginRequest.getPassword()
+                    )
             );
-            // Optionally, generate JWT or HttpSession here
-            String token=jwtUtil.generateToken(loginRequest.getEmail());
-            // Return minimal, safe user info
-            LoginResponse response=new LoginResponse(token);
-            response.setEmail(loginRequest.getEmail());
+
+            // Extract CustomUserDetails from authentication object
+            CustomUserDetails newuserDetails = (CustomUserDetails) authentication.getPrincipal();
+            System.out.println(newuserDetails.getUserId()+"FROM LOGIN CONTROLLER");
+            Object principal = authentication.getPrincipal();
+            CustomUserDetails userDetails=null;
+            if (principal instanceof CustomUserDetails) {
+                userDetails = (CustomUserDetails) principal;
+                System.out.println("FROM LOGIN CONTROLLER"+userDetails.getUserId());
+                // your logic
+            } else {
+                // fallback or throw error
+                throw new IllegalStateException("Expected CustomUserDetails principal but got " + principal.getClass());
+            }
+
+            int userId = userDetails.getUserId();
+            String name = userDetails.getFullname();
+
+            // Generate JWT token with user details
+            String token = jwtUtil.generateToken(userDetails);
+
+            // Prepare LoginResponse DTO
+            LoginResponse response = new LoginResponse(token);
+            response.setUser_id(userId);
+            response.setEmail(userDetails.getUsername()); // Always from DB, not request
             response.setLoginTime(LocalDateTime.now());
-            response.setName(authentication.getName());
-            
+            response.setName(name != null ? name : userDetails.getUsername());
+
             return ResponseEntity.ok(response);
+
         } catch (AuthenticationException ex) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+            // Return 401 Unauthorized on bad credentials
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new LoginResponse("Invalid credentials"));
         }
     }
 
-
     @PostMapping("/logout")
-    public ResponseEntity<?> logout() {
-        // No backend state to clear with stateless JWT
+    public ResponseEntity<String> logout() {
+        // JWT is stateless: client must delete the token
         return ResponseEntity.ok("Logged out (client should delete JWT)");
     }
 }

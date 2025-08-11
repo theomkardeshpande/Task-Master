@@ -8,6 +8,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class LoginResponse {
+    private int user_id;
     private String email;
     private String name;
     private LocalDateTime loginTime;

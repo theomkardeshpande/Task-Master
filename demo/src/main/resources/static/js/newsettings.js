@@ -21,52 +21,58 @@ function checkAuthentication() {
   }
 }
 
-// Load user data from backend and populate form and localStorage
-function loadUserData() {
-  // Attempt to load from backend API first
-  fetch('/user/profile') // Adapt URL to your backend
-    .then(res => {
-      if (!res.ok) throw new Error("Failed to load user data")
-      return res.json()
-    })
-    .then(userData => {
-      if (userData) {
-        // Save to localStorage/sessionStorage
-        if (localStorage.getItem("taskmaster_user")) {
-          localStorage.setItem("taskmaster_user", JSON.stringify(userData))
-        } else {
-          sessionStorage.setItem("taskmaster_user", JSON.stringify(userData))
-        }
-        const userData = JSON.parse(localStorage.getItem("taskmaster_user"))
-        // Populate form fields
-        const fullName = userData.fullname || ""
-        const nameParts = fullName.split(" ")
-        document.getElementById("first-name").value = nameParts[0] || ""
-        document.getElementById("last-name").value = nameParts.slice(1).join(" ") || ""
-        document.getElementById("email").value = userData.email || ""
-        document.getElementById("bio").value = userData.bio || ""
+async function loadUserData() {
+  try {
+    // Try to load user data from backend API
+    const res = await fetch('/user/profile', {
+      method: "GET",
+      headers: { "Content-Type": "application/json" }
+    });
 
-        // Show profile picture if exists
-        if (userData.profilePictureUrl) {
-          const avatarDiv = document.querySelector(".w-20.h-20.bg-blue-600.rounded-full")
-          avatarDiv.innerHTML = `<img src="${userData.profilePictureUrl}" alt="Profile Picture" class="w-20 h-20 rounded-full object-cover" />`
-        }
-      }
-    })
-    .catch(err => {
-      console.error(err)
-      // If no API or error, fallback to localStorage data (optional)
-      const userData = JSON.parse(localStorage.getItem("taskmaster_user"))
-      if (userData) {
-        const fullName = userData.fullname || ""
-        const nameParts = fullName.split(" ")
-        document.getElementById("first-name").value = nameParts[0] || ""
-        document.getElementById("last-name").value = nameParts.slice(1).join(" ") || ""
-        document.getElementById("email").value = userData.email || ""
-        document.getElementById("bio").value = userData.bio || ""
-      }
-    })
+    if (!res.ok) throw new Error("Failed to load user data");
+
+    const userData = await res.json();
+
+    // Save to localStorage (preferred) or fallback to sessionStorage
+    localStorage.setItem("taskmaster_user", JSON.stringify(userData));
+
+    // Populate form fields from fetched data
+    populateUserForm(userData);
+
+  } catch (err) {
+    console.error(err);
+
+    // Try loading from localStorage if API fails
+    const localData = localStorage.getItem("taskmaster_user");
+    if (localData) {
+      const userData = JSON.parse(localData);
+      populateUserForm(userData);
+    }
+  }
 }
+
+// Helper function for populating the form
+function populateUserForm(userData) {
+  if (!userData) return;
+
+  const fullName = userData.fullname || "";
+  const nameParts = fullName.trim().split(" ");
+  document.getElementById("first-name").value = nameParts[0] || "";
+  document.getElementById("last-name").value =
+    nameParts.length > 1 ? nameParts.slice(1).join(" ") : "";
+
+  document.getElementById("email").value = userData.email || "";
+  document.getElementById("bio").value = userData.bio || "";
+
+  // Show profile picture if exists
+  if (userData.profilePictureUrl) {
+    const avatarDiv = document.querySelector(".w-20.h-20.bg-blue-600.rounded-full");
+    if (avatarDiv) {
+      avatarDiv.innerHTML = `<img src="${userData.profilePictureUrl}" alt="Profile Picture" class="w-20 h-20 rounded-full object-cover" />`;
+    }
+  }
+}
+
 
 function setupEventListeners() {
   document.querySelectorAll(".settings-nav-btn").forEach((btn) => {
@@ -135,27 +141,101 @@ function handleSectionChange(event) {
     targetElement.classList.add("animate-fade-in")
   }
 }
+let userDataUpdate = {}; // Assuming this object exists somewhere in your code to hold user data updates
+//let selectedProfilePicture = null;
 
 function changeProfilePicture() {
+  // When "Change Avatar" button is clicked, trigger hidden file input click
   document.getElementById("change-avatar-btn").addEventListener("click", () => {
-    document.getElementById("profile-picture-input").click()
-  })
+    document.getElementById("profile-picture-input").click();
+  });
 
+  // When file selected, preview it and then upload
   document.getElementById("profile-picture-input").addEventListener("change", (event) => {
-    const file = event.target.files[0]
+    const file = event.target.files[0];
     if (file) {
-      selectedProfilePicture = file
+      selectedProfilePicture = file;
 
-      // Optional: show preview
-      const reader = new FileReader()
+      // Preview image in the UI
+      const reader = new FileReader();
       reader.onload = function (e) {
-        const avatarDiv = document.querySelector(".w-20.h-20.bg-blue-600.rounded-full")
-        avatarDiv.innerHTML = `<img src="${e.target.result}" alt="Profile Picture" class="w-20 h-20 rounded-full object-cover" />`
+        const avatarDiv = document.querySelector(".w-20.h-20.bg-blue-600.rounded-full");
+        if (avatarDiv) {
+          avatarDiv.innerHTML = `<img src="${e.target.result}" alt="Profile Picture" class="w-20 h-20 rounded-full object-cover" />`;
+        }
+      };
+      reader.readAsDataURL(file);
+
+      // Get user ID from localStorage
+      const userData = JSON.parse(localStorage.getItem("taskmaster_user"));
+      const userId = userData?.id || userData?.userId;
+      if (!userId) {
+        console.error("User ID not found in localStorage");
+        return;
       }
-      reader.readAsDataURL(file)
+
+      // Call API to save the picture
+      saveProfilePicture(userId);
     }
-  })
+  });
 }
+
+async function saveProfilePicture(userId) {
+  // Upload profile picture if selected
+  if (selectedProfilePicture && userId) {
+    try {
+      const pictureForm = new FormData();
+      pictureForm.append("file", selectedProfilePicture);
+
+      const response = await fetch(`/user/${userId}/profile-picture`, {
+        method: "PUT",
+        body: pictureForm,
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to upload profile picture");
+      }
+
+      // Parse backend's plain text response (not JSON)
+      const resultText = await response.text();
+      console.log("Server response:", resultText);
+
+      // Optionally show a toast/snackbar
+      alert(resultText);
+
+      // Clear the selected file
+      selectedProfilePicture = null;
+
+    } catch (error) {
+      console.error(error);
+      alert("Error uploading profile picture");
+    }
+  }
+}
+
+async function loadProfilePicture(userId) {
+  if (!userId) {
+    console.error("User ID is required to load profile picture");
+    return;
+  }
+  
+  const response = await fetch(`/user/${userId}/profile-picture`, {
+    method: "GET",
+  });
+
+  if (!response.ok) {
+    console.error("Profile picture not found or failed to load");
+    return;
+  }
+
+  const blob = await response.blob();
+  const imageUrl = URL.createObjectURL(blob);
+  const avatarDiv = document.querySelector(".w-20.h-20.bg-blue-600.rounded-full");
+  if (avatarDiv) {
+    avatarDiv.innerHTML = `<img src="${imageUrl}" alt="Profile Picture" class="w-20 h-20 rounded-full object-cover" />`;
+  }
+}
+
 
 async function handleProfileUpdate(event) {
   event.preventDefault()
@@ -166,6 +246,8 @@ async function handleProfileUpdate(event) {
   const lastName = formData.get("lastName").trim()
   const email = formData.get("email").trim()
   const bio = formData.get("bio").trim()
+  const profilePicture=formData.get("profilePicture")
+
 
   if (!firstName || !email) {
     showNotification("Please fill in all required fields", "error")
@@ -181,7 +263,7 @@ async function handleProfileUpdate(event) {
 
   try {
     // Update user profile info (without picture) via API
-    const userData = JSON.parse(localStorage.getItem("taskmaster_user") || sessionStorage.getItem("taskmaster_user"))
+    const userData = JSON.parse(localStorage.getItem("taskmaster_user"))
     const userId = userData?.id || userData?.userId
     if (!userId) throw new Error("User ID not found")
 
@@ -194,47 +276,26 @@ async function handleProfileUpdate(event) {
 
     if (!response.ok) throw new Error("Failed to update profile information")
 
-    // If profile picture selected, upload it separately
-    if (selectedProfilePicture) {
-      const pictureForm = new FormData()
-      pictureForm.append("file", selectedProfilePicture)
-
-      response = await fetch(`/user/${userId}/profile-picture`, {
-        method: "PUT",
-        body: pictureForm,
-      })
-
-      if (!response.ok) throw new Error("Failed to upload profile picture")
-
-      const pictureData = await response.json()
-      if (pictureData && pictureData.url) {
-        userDataUpdate.profilePictureUrl = pictureData.url
-      }
-      selectedProfilePicture = null
+    if (response.ok) {
+      loadProfilePicture(userId);
     }
 
     // Fetch updated user data from server (optional but recommended)
     const userRes = await fetch(`/user/profile`)
-    const userProfilePicture= await fetch('/user/{userId}/profile-picture',{
-        method:"GET",
-        body:MediaType.All
-    })
+
     if (userRes.ok) {
       const updatedUser = await userRes.json()
       // Save updated user data locally
       if (localStorage.getItem("taskmaster_user")) {
         localStorage.setItem("taskmaster_user", JSON.stringify(updatedUser))
-      } else {
-        sessionStorage.setItem("taskmaster_user", JSON.stringify(updatedUser))
       }
-    } else {
+    } 
+    else {
       // As fallback update local data with what we sent
-      const userData = JSON.parse(localStorage.getItem("taskmaster_user") || sessionStorage.getItem("taskmaster_user"))
+      const userData = JSON.parse(localStorage.getItem("taskmaster_user"))
       const newUserData = { ...userData, ...userDataUpdate }
       if (localStorage.getItem("taskmaster_user")) {
         localStorage.setItem("taskmaster_user", JSON.stringify(newUserData))
-      } else {
-        sessionStorage.setItem("taskmaster_user", JSON.stringify(newUserData))
       }
     }
 
@@ -244,6 +305,8 @@ async function handleProfileUpdate(event) {
     showNotification("Failed to update profile", "error")
   }
 }
+
+
 
 async function handlePasswordChange(event) {
   event.preventDefault()
@@ -388,13 +451,13 @@ function getSettings() {
   return savedSettings
     ? JSON.parse(savedSettings)
     : {
-        theme: "light",
-        "auto-save": true,
-        "task-sounds": false,
-        "due-date-reminders": true,
-        "default-priority": "medium",
-        "tasks-per-page": "25",
-      }
+      theme: "light",
+      "auto-save": true,
+      "task-sounds": false,
+      "due-date-reminders": true,
+      "default-priority": "medium",
+      "tasks-per-page": "25",
+    }
 }
 
 // Save settings to localStorage (fallback)
@@ -474,9 +537,8 @@ function getSettingLabel(settingId) {
 
 function showNotification(message, type) {
   const notification = document.createElement("div")
-  notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 animate-slide-down ${
-    type === "success" ? "bg-green-500 text-white" : "bg-red-500 text-white"
-  }`
+  notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 animate-slide-down ${type === "success" ? "bg-green-500 text-white" : "bg-red-500 text-white"
+    }`
   const icon = type === "success" ? "fa-check-circle" : "fa-exclamation-circle"
   notification.innerHTML = `<i class="fas ${icon} mr-2"></i>${message}`
   document.body.appendChild(notification)

@@ -1,6 +1,8 @@
 package com.example.demo.Model;
 
 
+import lombok.Setter;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -8,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
+@Setter
 public class CustomUserDetails implements UserDetails {
 
     private final AppUser user;
@@ -31,6 +34,8 @@ public class CustomUserDetails implements UserDetails {
     public String getFullname() {
         return user.getFullname();
     }
+
+    public int getUserId() {return user.getUser_id();}
 
     public String getBio(){return  user.getBio();}
 
