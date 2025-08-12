@@ -183,13 +183,46 @@ function handleFilterChange(event) {
 //    showNotification(`Task ${action}!`, "success")
 //  }
 //}
+
+function playTaskCompleteSoundIfAllowed() {
+  try {
+    const settingsRaw = localStorage.getItem("taskmaster_settings");
+    if (settingsRaw) {
+      const settings = JSON.parse(settingsRaw);
+      if (settings.task-sounds === true) {
+        const sound = new Audio("/sound/Completion.mp3");
+        sound.play().catch(err => console.warn("Sound playback failed:", err));
+      }
+    }
+  } catch (e) {
+    console.warn("Error reading from taskmaster_settings in localStorage:", e);
+  }
+}
+
+
+function toggleSound(taskId){
+const task = tasks.find((t) => t.id === taskId)
+const wasCompleted=task.completed;
+    task.completed = !task.completed
+      if (!wasCompleted && task.completed) {
+            const sound = new Audio("/sound/Completion.mp3");
+            sound.play().catch(err => console.warn("Sound playback failed:", err));
+      }
+}
+
 function toggleTask(taskId) {
   const task = tasks.find((t) => t.id === taskId)
   if (task) {
     // Toggle the completion status locally
-    task.completed = !task.completed
-
+    task.completed = !task.completed;
     // Prepare the update payload with the current task's fields including the new completion status
+    const wasCompleted = task.completed;
+    task.completed = !task.completed;
+
+    if (!wasCompleted && task.completed) {
+      playTaskCompleteSoundIfAllowed();
+    }
+
     const updatedTask = {
       title: task.title,
       description: task.description,
@@ -390,6 +423,8 @@ function renderTasks() {
     }
   })
 }
+
+
 
 function createTaskHTML(task) {
   const priorityColors = {

@@ -9,6 +9,7 @@ server:
 app:
   file:
     upload-dir: ./uploads/profile-picture
+  url: ${APP_URL:https://localhost:8081}
 
 
 spring:
@@ -16,6 +17,20 @@ spring:
     active: dev
   application:
     name: TodoApp
+
+  task:
+    scheduling:
+      enabled: "false"
+      email-cron: "0 0 8 * * ?"
+      reminder-cron: "0 0/30 * * * ?"
+      pool:
+        size: 5
+    execution:
+      pool:
+        core-size: 4
+        max-size: 8
+        queue-capacity: 100
+        thread-name-prefix: async-task-
 
   datasource:
     url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:todo}

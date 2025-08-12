@@ -122,7 +122,8 @@
                             <i class="fas fa-user text-white text-2xl"></i>
                         </div>
                         <div>
-                            <input type="file" id="profile-picture-input" name="profilePicture" accept="image/*" class="hidden"/>
+                            <input type="file" id="profile-picture-input" name="profilePicture" accept="image/*"
+                                   class="hidden"/>
                             <button type="button" id="change-avatar-btn"
                                     class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200">
                                 Change Avatar
@@ -269,18 +270,18 @@
                     </div>
 
                     <div>
-                        <h3 class="text-lg font-medium text-slate-900 mb-4">Task Management</h3>
+                        <h3 class="text-lg font-medium text-slate-900 mb-3">Task Management</h3>
                         <div class="space-y-4">
                             <div class="flex items-center justify-between">
-                                <div>
-                                    <label for="auto-save" class="text-sm font-medium text-slate-700">Auto-save
-                                        tasks</label>
-                                    <p class="text-sm text-slate-500">Automatically save tasks as you type</p>
-                                </div>
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" id="auto-save" class="sr-only peer" checked>
-                                    <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                                </label>
+                                <!--                                <div>-->
+                                <!--                                    <label for="auto-save" class="text-sm font-medium text-slate-700">Auto-save-->
+                                <!--                                        tasks</label>-->
+                                <!--                                    <p class="text-sm text-slate-500">Automatically save tasks as you type</p>-->
+                                <!--                                </div>-->
+                                <!--                                <label class="relative inline-flex items-center cursor-pointer">-->
+                                <!--                                    <input type="checkbox" id="auto-save" class="sr-only peer" checked>-->
+                                <!--                                    <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>-->
+                                <!--                                </label>-->
                             </div>
 
                             <div class="flex items-center justify-between">
@@ -352,21 +353,21 @@
                             <p class="text-sm text-slate-500">Receive email updates about your tasks</p>
                         </div>
                         <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" class="sr-only peer" checked>
+                            <input type="checkbox" id="email-notifications" class="sr-only peer" checked>
                             <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                         </label>
                     </div>
 
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <h3 class="text-sm font-medium text-slate-700">Push notifications</h3>
-                            <p class="text-sm text-slate-500">Receive push notifications in your browser</p>
-                        </div>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" class="sr-only peer">
-                            <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                        </label>
-                    </div>
+                    <!--                    <div class="flex items-center justify-between">-->
+                    <!--                        <div>-->
+                    <!--                            <h3 class="text-sm font-medium text-slate-700">Push notifications</h3>-->
+                    <!--                            <p class="text-sm text-slate-500">Receive push notifications in your browser</p>-->
+                    <!--                        </div>-->
+                    <!--                        <label class="relative inline-flex items-center cursor-pointer">-->
+                    <!--                            <input type="checkbox" class="sr-only peer">-->
+                    <!--                            <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>-->
+                    <!--                        </label>-->
+                    <!--                    </div>-->
 
                     <div class="flex items-center justify-between">
                         <div>
@@ -374,7 +375,7 @@
                             <p class="text-sm text-slate-500">Get reminded about upcoming tasks</p>
                         </div>
                         <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" class="sr-only peer" checked>
+                            <input type="checkbox" id="dueDateReminders" class="sr-only peer" checked>
                             <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                         </label>
                     </div>
