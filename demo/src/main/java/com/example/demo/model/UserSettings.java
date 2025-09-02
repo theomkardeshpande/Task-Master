@@ -1,12 +1,11 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name="user_settings")
+@Table(name = "user_settings")
 @Data
 @NoArgsConstructor
 public class UserSettings {
@@ -19,6 +18,9 @@ public class UserSettings {
     private int userId;
 
     private String theme;               // "light" / "dark"
+
+    @Column(name = "task_reminders")
+    private Boolean taskReminders;
 
     @Column(name = "task_sounds")
     private boolean taskSounds;
@@ -35,10 +37,16 @@ public class UserSettings {
     @Column(name = "email_notifications")
     private Boolean emailNotifications;
 
-    public UserSettings(int userId){
-        this.userId=userId;
+    public UserSettings(int userId) {
+        this.userId = userId;
+        this.theme="light";
+        this.setDueDateReminders(false);
+        this.setTaskReminders(false);
+        this.setTaskSounds(false);
+        this.setDefaultPriority("medium");
+        this.setTasksPerPage(25);
+        this.setEmailNotifications(false);
     }
-
 
 
 }

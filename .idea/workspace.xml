@@ -7,55 +7,34 @@
     <list default="true" id="0cc5f8fb-7ba1-4853-b127-6239de5c0e05" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/demo/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/demo/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Configure/JwtConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/configure/JwtConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Configure/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/configure/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/controller/AuthController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Controller/ChangeProfileController.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/controller/ChangeProfileController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Controller/DashboardController.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/controller/DashboardController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Controller/ForgetPassword.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/controller/ForgetPassword.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Controller/HomeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/controller/HomeController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Controller/LoginController.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/controller/LoginController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Controller/LoginControllerPage.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/controller/LoginControllerPage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Controller/RegisterController.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/controller/RegisterController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Controller/RegisterControllerPage.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/controller/RegisterControllerPage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Controller/RegisterValidator.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/controller/RegisterValidator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Controller/SettingsController.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/controller/SettingsController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Controller/TaskController.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/controller/TaskController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Controller/UserProfileController.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/controller/UserProfileController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Dto/LoginRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/dto/LoginRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Dto/LoginResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/dto/LoginResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Dto/PasswordChangeRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/dto/PasswordChangeRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Dto/PasswordResetRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/dto/PasswordResetRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Dto/ProfileChangeRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/dto/ProfileChangeRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Dto/RegisterRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/dto/RegisterRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Dto/TaskRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/dto/TaskRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Dto/UpdateTaskRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/dto/UpdateTaskRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Dto/UpdatedProfileResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/dto/UpdatedProfileResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Dto/UserProfileData.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/dto/UserProfileData.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Dto/UserResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/dto/UserResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Model/AppUser.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/model/AppUser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Model/CustomUserDetails.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/model/CustomUserDetails.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Model/PasswordResetToken.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/model/PasswordResetToken.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Model/Task.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/model/Task.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Model/VerificationToken.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/model/VerificationToken.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Repository/PasswordResetTokenRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/repository/PasswordResetTokenRepo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Repository/ResetRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/repository/ResetRepo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Repository/TaskRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/repository/TaskRepo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Repository/UserRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/repository/UserRepo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Repository/VerificationTokenRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/repository/VerificationTokenRepo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Security/JwtAuthenticationEntryPoint.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/security/JwtAuthenticationEntryPoint.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Security/JwtAuthenticationFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/security/JwtAuthenticationFilter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Security/JwtUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/security/JwtUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Service/CustomOAuth2UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/service/CustomOAuth2UserService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Service/CustomUserDetailService.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/service/CustomUserDetailService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Service/OAuth2LoginSuccessHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/service/OAuth2LoginSuccessHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Service/PasswordResetService.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/service/PasswordResetService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/service/UserService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/Service/VerificationEmail.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/service/VerificationEmail.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/TodoAppApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/TodoAppApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/configure/SecurityConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/controller/LoginController.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/controller/LoginController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/controller/RegisterController.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/controller/RegisterController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/controller/UserProfileController.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/controller/UserProfileController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/dto/LoginResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/dto/LoginResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/dto/UserProfileData.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/dto/UserProfileData.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/model/AppUser.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/model/AppUser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/model/CustomUserDetails.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/model/CustomUserDetails.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/model/Task.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/model/Task.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/model/UserSettings.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/model/UserSettings.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/repository/TaskRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/repository/TaskRepo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/repository/UserRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/repository/UserRepo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/repository/UserSettingsRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/repository/UserSettingsRepo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/scheduling/NotificationScheduler.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/scheduling/NotificationScheduler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/security/JwtAuthenticationFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/security/JwtAuthenticationFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/security/JwtUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/security/JwtUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/service/CustomOAuth2UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/service/CustomOAuth2UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/service/OAuth2LoginSuccessHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/service/OAuth2LoginSuccessHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/service/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/service/UserSettingsService.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/service/UserSettingsService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/demo/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/src/main/resources/static/js/dashboard.js" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/static/js/dashboard.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/src/main/resources/static/js/login.js" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/static/js/login.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/demo/src/main/resources/static/js/newdashboard.js" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/static/js/newdashboard.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/demo/src/main/resources/static/js/newsettings.js" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/static/js/newsettings.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/src/main/resources/static/js/settings.js" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/static/js/settings.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/src/main/resources/templates/Dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/templates/Dashboard.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/src/main/resources/templates/Login.html" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/templates/Login.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/demo/src/main/resources/templates/Settings.html" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/templates/Settings.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -146,5 +125,27 @@
   </component>
   <component name="UnknownFeatures">
     <option featureType="com.intellij.fileTypeFactory" implementationName=".env" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/demo/src/main/java/com/example/demo/service/OAuth2LoginSuccessHandler.java</url>
+          <line>66</line>
+          <option name="timeStamp" value="15" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

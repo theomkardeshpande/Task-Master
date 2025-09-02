@@ -7,10 +7,11 @@ server:
     key-alias: your_key_alias
 
 app:
+  url: ${APP_URL:https://localhost:8081}
   file:
     upload-dir: ./uploads/profile-picture
-  url: ${APP_URL:https://localhost:8081}
-
+  jwt:
+    secret: ${JWT_SECRET}
 
 spring:
   profiles:
@@ -39,6 +40,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
+    open-in-view: false
     database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
       ddl-auto: update
@@ -55,7 +57,7 @@ spring:
 
   mail:
     host: ${MAIL_HOST:smtp.gmail.com}
-    port: ${MAIL_PORT:587}
+    port: 0
     username: ${MAIL_USER}
     password: ${MAIL_PASS}
     properties:

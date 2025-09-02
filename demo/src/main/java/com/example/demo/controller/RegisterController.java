@@ -9,15 +9,19 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/auth")
 public class RegisterController {
     private final UserService userService;
-    
-    public RegisterController(UserService userService) {
+    private final UserSettingsService userSettingsService;
+
+    public RegisterController(UserService userService, UserSettingsService userSettingsService) {
         this.userService = userService;
+        this.userSettingsService=userSettingsService;
     }
     
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         try {
             UserResponse user = userService.registerNewUser(request);
+            userSettingsService.createNewUserSettings(user.getUser_id());
+
             return ResponseEntity.ok(user);
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.status(HttpStatus.CONFLICT)

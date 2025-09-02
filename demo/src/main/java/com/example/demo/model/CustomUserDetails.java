@@ -36,6 +36,8 @@ public class CustomUserDetails implements UserDetails {
 
     public int getUserId() {return user.getUser_id();}
 
+    public String getRole(){ return user.getRole();}
+
     public String getBio(){return  user.getBio();}
 
     public byte[] getProfilePicture(){return user.getProfilePicture();}

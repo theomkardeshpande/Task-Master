@@ -118,23 +118,23 @@ async function handleLogin(event) {
 
     // Prepare login payload
     const payload = {
-        email: email,
-        password: password,
-        rememberMe: !!rememberMe
+      email: email,
+      password: password,
+      rememberMe: !!rememberMe
     };
 
     // Make POST request to Spring Boot login endpoint (adjust URL accordingly)
     const response = await fetch("/auth/login", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload)
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
     });
 
     if (!response.ok) {
-        // If response status is not 2xx, throw error
-        throw new Error("Invalid credentials or server error");
+      // If response status is not 2xx, throw error
+      throw new Error("Invalid credentials or server error");
     }
 
     // Parse JSON response from backend
@@ -143,9 +143,8 @@ async function handleLogin(event) {
     // Store user session data based on "rememberMe" flag
     console.log(userData)
     if (userData) {
-        localStorage.setItem("taskmaster_user", JSON.stringify(userData));
-    } else {
-        sessionStorage.setItem("taskmaster_user", JSON.stringify(userData));
+      localStorage.clear()
+      localStorage.setItem("taskmaster_user", JSON.stringify(userData));
     }
 
     // Show success message
@@ -153,7 +152,7 @@ async function handleLogin(event) {
 
     // Redirect after a short delay to dashboard (adjust path as needed)
     setTimeout(() => {
-        window.location.href = "/dashboard";
+      window.location.href = "/dashboard";
     }, 1500);
 
   }
@@ -169,7 +168,7 @@ async function handleLogin(event) {
     // Shake form animation for feedback
     form.classList.add("animate-shake");
     setTimeout(() => {
-        form.classList.remove("animate-shake");
+      form.classList.remove("animate-shake");
     }, 500);
 
     // Focus email field for retry
@@ -247,9 +246,8 @@ function isValidEmail(email) {
 
 function showNotification(message, type) {
   const notification = document.createElement("div")
-  notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 animate-slide-down ${
-    type === "success" ? "bg-green-500 text-white" : "bg-red-500 text-white"
-  }`
+  notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 animate-slide-down ${type === "success" ? "bg-green-500 text-white" : "bg-red-500 text-white"
+    }`
 
   const icon = type === "success" ? "fa-check-circle" : "fa-exclamation-circle"
   notification.innerHTML = `<i class="fas ${icon} mr-2"></i>${message}`

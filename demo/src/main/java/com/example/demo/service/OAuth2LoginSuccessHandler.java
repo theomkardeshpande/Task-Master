@@ -1,26 +1,25 @@
 package com.example.demo.service;
 
-import java.time.LocalDateTime;
 
+import com.example.demo.model.AppUser;
 import com.example.demo.model.CustomUserDetails;
+import com.example.demo.repository.UserRepo;
+import com.example.demo.security.JwtUtil;
+import io.jsonwebtoken.io.IOException;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import com.example.demo.model.AppUser;
-import com.example.demo.repository.UserRepo;
-import com.example.demo.security.JwtUtil;
 
 import java.util.Optional;
 import java.util.UUID;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import io.jsonwebtoken.io.IOException;
-import jakarta.servlet.http.HttpServletRequest;
 
 @Component
 public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
@@ -29,10 +28,10 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
     private final UserRepo userRepository;
     private final CustomUserDetailService userDetailsService;
 
-    public OAuth2LoginSuccessHandler(JwtUtil jwtUtil, UserRepo userRepository,CustomUserDetailService userDetailsService) {
+    public OAuth2LoginSuccessHandler(JwtUtil jwtUtil, UserRepo userRepository, CustomUserDetailService userDetailsService) {
         this.jwtUtil = jwtUtil;
         this.userRepository = userRepository;
-        this.userDetailsService=userDetailsService;
+        this.userDetailsService = userDetailsService;
     }
 
     public String generateDefaultPasswordForOAuthUser() {
@@ -49,31 +48,19 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         OAuth2User oauthUser = (OAuth2User) authentication.getPrincipal();
 
         String email = oauthUser.getAttribute("email");
-        String Fullname =oauthUser.getAttribute("name");
+        String Fullname = oauthUser.getAttribute("name");
 
         // Optional: double-check user exists
-        AppUser user = userRepository.findByEmail(email)
-                .orElseGet(() -> {
-                    AppUser newUser = new AppUser();
-                    newUser.setEmail(email);
-                    newUser.setRegisterationTime(LocalDateTime.now());
-                    newUser.setFullname(Fullname);
-                    newUser.setPassword(generateDefaultPasswordForOAuthUser());
-                    newUser.setRole("USER"); // default or your roles logic
-                    return userRepository.save(newUser);
-                });
-
         Optional<AppUser> userForId = userRepository.findByEmail(email);
 
-        AppUser newUser=userForId.orElseThrow(()-> new RuntimeException("User Not Found in Oauth"));
-
+        AppUser user = userForId.orElseThrow(() -> new RuntimeException("User Not Found in Oauth"));
         CustomUserDetails userDetails = null;
         try {
-            userDetails = new CustomUserDetailService(userRepository).loadUserById(newUser.getUser_id());
+            userDetails = new CustomUserDetailService(userRepository).loadUserById(user.getUser_id());
         } catch (Exception e) {
-            throw new RuntimeException(e+"IN OAUTH2");
+            throw new RuntimeException(e + "IN OAUTH2");
         }
-        CustomUserDetails customUserDetails= new CustomUserDetails(user);
+        CustomUserDetails customUserDetails = new CustomUserDetails(user);
         System.out.println(userDetails.getUserId());
 
         // Generate JWT token

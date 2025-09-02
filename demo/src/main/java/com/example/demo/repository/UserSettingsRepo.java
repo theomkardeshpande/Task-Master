@@ -9,7 +9,7 @@ import java.util.Optional;
 
 
 public interface UserSettingsRepo extends JpaRepository<UserSettings, Integer> {
-    Optional<UserSettings> findByUserId(Integer userId);
+    Optional<UserSettings> findByUserId(int userId);
 
     @Query("SELECT u FROM UserSettings u WHERE u.emailNotifications = true")
     List<UserSettings> getUsersWithEmailNotificationsEnabled();

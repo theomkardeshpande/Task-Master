@@ -1,7 +1,6 @@
 package com.example.demo.model;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;

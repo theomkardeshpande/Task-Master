@@ -150,6 +150,11 @@
             <artifactId>jakarta.annotation-api</artifactId>
             <version>3.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>io.github.cdimascio</groupId>
+            <artifactId>dotenv-java</artifactId>
+            <version>3.0.0</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -157,6 +162,10 @@
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
+                <excludes>
+                    <exclude>keystore.p12</exclude>
+                    <exclude>**/*.mp3</exclude>
+                </excludes>
             </resource>
         </resources>
         <plugins>

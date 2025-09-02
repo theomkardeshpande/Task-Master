@@ -20,21 +20,27 @@ public class UserSettingsService {
     }
 
     public Optional<UserSettings> getSettingsByUserId(int userId) {
-        return settingsRepo.findByUserId(userId);
+        return Optional.of(settingsRepo.findByUserId(userId).orElseGet(UserSettings::new));
     }
+
+   public void createNewUserSettings(int userId){
+       UserSettings userSettings=new UserSettings(userId);
+       settingsRepo.save(userSettings);
+   }
 
     public UserSettings saveOrUpdateSettings(int userId, UserSettings newSettings) {
         Optional<UserSettings> existing = settingsRepo.findByUserId(userId);
         if (existing.isPresent()) {
             UserSettings settings = existing.get();
             settings.setTheme(newSettings.getTheme());
+            settings.setTaskReminders(newSettings.getTaskReminders());
             settings.setTaskSounds(newSettings.isTaskSounds());
             settings.setDueDateReminders(newSettings.isDueDateReminders());
             settings.setDefaultPriority(newSettings.getDefaultPriority());
             settings.setTasksPerPage(newSettings.getTasksPerPage());
             return settingsRepo.save(settings);
         } else {
-            newSettings.setUserId(userId);
+            createNewUserSettings(userId);
             return settingsRepo.save(newSettings);
         }
     }

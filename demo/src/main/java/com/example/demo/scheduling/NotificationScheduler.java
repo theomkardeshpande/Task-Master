@@ -25,7 +25,7 @@ public class NotificationScheduler {
     private final EmailService emailService;
     private final NotificationService notificationService;
 
-    @Value("${appUrl}")
+    @Value("${app.url}")
     private String appUrl;
 
     public NotificationScheduler(UserSettingsService userSettingsService,
@@ -39,7 +39,7 @@ public class NotificationScheduler {
     }
 
     // Email notifications - runs every hour at minute 0
-    @Scheduled(cron = "${app.scheduling.email-cron}")
+    @Scheduled(cron = "${spring.task.scheduling.email-cron}")
     public void sendEmailNotifications() {
         logger.info("Starting email notification job");
 
@@ -68,7 +68,7 @@ public class NotificationScheduler {
     }
 
     // Task reminders - runs every 15 minutes
-    @Scheduled(cron = "${app.scheduling.reminder-cron}")
+    @Scheduled(cron = "${spring.task.scheduling.reminder-cron}")
     public void sendTaskReminders() {
         logger.info("Starting task reminder job");
 

@@ -1,12 +1,12 @@
 package com.example.demo.security;
 
 import com.example.demo.model.CustomUserDetails;
+import com.example.demo.service.CustomUserDetailService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,8 +19,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
 
-import com.example.demo.service.CustomUserDetailService;
-
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -29,10 +27,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final CustomUserDetailService customUserDetailService;
 
-    public JwtAuthenticationFilter(JwtUtil jwtUtil, CustomUserDetailService customUserDetailService) {
+    public JwtAuthenticationFilter(JwtUtil jwtUtil,
+                                   CustomUserDetailService customUserDetailService) {
         this.jwtUtil = jwtUtil;
         this.customUserDetailService = customUserDetailService;
     }
+
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -40,56 +40,68 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
+        logger.debug("=== JWT Filter Processing: {} {} ===", request.getMethod(), request.getRequestURI());
+
         try {
             String jwt = extractJwtFromCookies(request);
 
             if (jwt == null) {
-                logger.debug("No JWT token found in cookies for request: {} {}", request.getMethod(), request.getRequestURI());
+                logger.debug("❌ No JWT token found in cookies");
+                // Print all cookies for debugging
+                if (request.getCookies() != null) {
+                    for (Cookie cookie : request.getCookies()) {
+                        logger.debug("Found cookie: {} = {}", cookie.getName(), cookie.getValue());
+                    }
+                } else {
+                    logger.debug("❌ No cookies found at all");
+                }
                 filterChain.doFilter(request, response);
                 return;
             }
+
+            logger.debug("✅ JWT token found: {}...", jwt.substring(0, Math.min(20, jwt.length())));
 
             if (SecurityContextHolder.getContext().getAuthentication() != null) {
-                logger.debug("SecurityContext already contains authentication for request: {} {}", request.getMethod(), request.getRequestURI());
+                logger.debug("⚠️ SecurityContext already has authentication");
                 filterChain.doFilter(request, response);
                 return;
             }
 
-            if (!jwtUtil.validateToken(jwt)) {
-                logger.warn("Invalid JWT token detected for request: {} {}", request.getMethod(), request.getRequestURI());
+            boolean isValid = jwtUtil.validateToken(jwt);
+            logger.debug("JWT validation result: {}", isValid);
+
+            if (!isValid) {
+                logger.warn("❌ Invalid JWT token");
                 filterChain.doFilter(request, response);
                 return;
             }
+
+            // Extract user info from JWT
+            Integer userId = jwtUtil.getUserIdFromToken(jwt);
+            String email = jwtUtil.getEmailFromToken(jwt);
+            logger.debug("JWT claims - userId: {}, email: {}", userId, email);
 
             CustomUserDetails userDetails = null;
-            Integer userId = jwtUtil.getUserIdFromToken(jwt);
             if (userId != null) {
-                logger.debug("JWT contains userId: {}", userId);
                 userDetails = customUserDetailService.loadUserById(userId);
-            } else {
-                String email = jwtUtil.getEmailFromToken(jwt);
-                if (email != null) {
-                    logger.debug("JWT fallback to email: {}", email);
-                    userDetails = customUserDetailService.loadUserByUsername(email);
-                }
+            } else if (email != null) {
+                userDetails = customUserDetailService.loadUserByUsername(email);
             }
 
-            if (userDetails != null) {
+            if (userDetails != null) {     
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(
-                                userDetails,
-                                null,
-                                userDetails.getAuthorities());
-
+                                userDetails, null, userDetails.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
-                logger.debug("Authentication set in SecurityContext for user: {}", userDetails.getUsername());
+
+                logger.debug("✅ Authentication set for user: {}", userDetails.getUsername());
             } else {
-                logger.warn("No user found for JWT claims in request: {} {}", request.getMethod(), request.getRequestURI());
+                logger.warn("❌ No user found for JWT claims");
             }
 
         } catch (Exception ex) {
-            logger.error("JWT authentication failed for request: {} {}", request.getMethod(), request.getRequestURI(), ex);
+            logger.error("❌ JWT authentication failed", ex);
             SecurityContextHolder.clearContext();
         }
 
@@ -97,7 +109,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
 
-    private String extractJwtFromCookies(HttpServletRequest request) throws Exception{
+    private String extractJwtFromCookies(HttpServletRequest request) {
         if (request.getCookies() != null) {
             Optional<Cookie> jwtCookie = Arrays.stream(request.getCookies())
                     .filter(cookie -> "jwt_token".equals(cookie.getName()))

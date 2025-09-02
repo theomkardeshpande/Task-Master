@@ -9,6 +9,7 @@ public class UserProfileData {
     private String email;
     private String bio;
     private int id;
+    private String role;
 
     private byte[] profilePicture;
 }
