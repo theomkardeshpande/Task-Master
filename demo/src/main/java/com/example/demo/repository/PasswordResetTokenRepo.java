@@ -4,7 +4,14 @@ import com.example.demo.model.PasswordResetToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface PasswordResetTokenRepo extends JpaRepository<PasswordResetToken,Integer> {
-    PasswordResetToken findByToken(String token);
+//    PasswordResetToken findByToken(String token);
+//    PasswordResetToken findByEmail(String email);
+
+    Optional<PasswordResetToken> findByToken(String tokenHash);
+
+    Optional<PasswordResetToken> findByUser_Email(String email);
 }

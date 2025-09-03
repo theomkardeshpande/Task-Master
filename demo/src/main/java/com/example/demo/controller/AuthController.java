@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.ForgetPasswordRequest;
 import com.example.demo.dto.PasswordResetRequest;
 import com.example.demo.service.PasswordResetService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,16 +21,17 @@ public class AuthController {
     //  Handle Forgot Password Request (send reset email)
     @PostMapping("/forgot-password")
     @ResponseBody
-    public ResponseEntity<String> processForgotPassword(@RequestParam String email,
-                                                @RequestParam String fullname) {
-        System.out.println("USER EMAIL:"+email);
-        System.out.println("USER FULLNAME:"+fullname);
+    public ResponseEntity<String> processForgotPassword(@RequestBody ForgetPasswordRequest request) throws Exception {
+        System.out.println("USER EMAIL:"+request.getEmail());
+        System.out.println("USER FULLNAME:"+request.getFullname());
 
-        String token = passwordResetService.createPasswordResetToken(email,fullname);
+        String token = passwordResetService.createPasswordResetToken(request.getEmail(),request.getFullname());
+        System.out.println("RETURN TOKEN:"+token);
         if (token == null) {
             return ResponseEntity.badRequest().build();
+        }else {
+            return ResponseEntity.ok().body("Password reset link sent to your email");
         }
-        return ResponseEntity.ok("Password reset link sent to your email");
     }
 
     // Render the Reset Password Page (user clicks email link)

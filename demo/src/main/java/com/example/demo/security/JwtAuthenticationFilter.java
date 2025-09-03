@@ -12,6 +12,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -22,22 +25,35 @@ import java.util.Optional;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+    private final PathPatternRequestMatcher.Builder pp =
+            PathPatternRequestMatcher.withDefaults();
+
+    private final RequestMatcher skip = new OrRequestMatcher(
+            pp.matcher("/auth/**"),
+            pp.matcher("/reset-password/**"),
+            pp.matcher("/forgot-password/**")
+    );
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        return skip.matches(request);
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
     private final JwtUtil jwtUtil;
     private final CustomUserDetailService customUserDetailService;
 
     public JwtAuthenticationFilter(JwtUtil jwtUtil,
-                                   CustomUserDetailService customUserDetailService) {
+            CustomUserDetailService customUserDetailService) {
         this.jwtUtil = jwtUtil;
         this.customUserDetailService = customUserDetailService;
     }
 
-
     @Override
     protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain)
+            HttpServletResponse response,
+            FilterChain filterChain)
             throws ServletException, IOException {
 
         logger.debug("=== JWT Filter Processing: {} {} ===", request.getMethod(), request.getRequestURI());
@@ -88,10 +104,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 userDetails = customUserDetailService.loadUserByUsername(email);
             }
 
-            if (userDetails != null) {     
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails, null, userDetails.getAuthorities());
+            if (userDetails != null) {
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
 
@@ -107,7 +122,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
-
 
     private String extractJwtFromCookies(HttpServletRequest request) {
         if (request.getCookies() != null) {
