@@ -20,13 +20,13 @@ public class UserSettings {
     private String theme;               // "light" / "dark"
 
     @Column(name = "task_reminders")
-    private Boolean taskReminders;
+    private boolean taskReminders=false;
 
     @Column(name = "task_sounds")
-    private boolean taskSounds;
+    private boolean taskSounds=false;
 
     @Column(name = "due_date_reminders")
-    private boolean dueDateReminders;
+    private boolean dueDateReminders=false;
 
     @Column(name = "default_priority")
     private String defaultPriority;     // "low", "medium", "high"
@@ -35,7 +35,7 @@ public class UserSettings {
     private int tasksPerPage;
 
     @Column(name = "email_notifications")
-    private Boolean emailNotifications;
+    private boolean emailNotifications=false;
 
     public UserSettings(int userId) {
         this.userId = userId;

@@ -9,6 +9,8 @@ document.getElementById("forgot-password-form").addEventListener("submit", async
     // Show a loading message (replace with actual API call)
     const submitButton = event.target.querySelector("button");
     submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Sending...';
+    document.getElementById("email").value=""
+    document.getElementById("fullname").value=""
     submitButton.disabled = true;
 
     data = {

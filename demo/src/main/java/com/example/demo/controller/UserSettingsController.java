@@ -1,11 +1,10 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.PreferencesRequest;
 import com.example.demo.model.UserSettings;
 import com.example.demo.service.UserSettingsService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/settings")
@@ -24,26 +23,30 @@ public class UserSettingsController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PutMapping("/{userId}")
-    public ResponseEntity<UserSettings> updateSettings(@PathVariable int userId,
-                                                       @RequestBody UserSettings settings) {
-        UserSettings updated = settingsService.saveOrUpdateSettings(userId, settings);
+//    @PutMapping("/{userId}")
+//    public ResponseEntity<UserSettings> updateSettings(@PathVariable int userId,
+//                                                       @RequestBody UserSettings settings) {
+//        UserSettings updated = settingsService.saveOrUpdateSettings(userId, settings);
+//        return ResponseEntity.ok(updated);
+//    }
+
+    @PutMapping("/preferences/{userId}")
+    public ResponseEntity<UserSettings> updatePreferences(@PathVariable int userId,@RequestBody PreferencesRequest request){
+        UserSettings updated=settingsService.updatePreferences(userId,request);
+        if(updated==null){
+//            ResponseEntity.badRequest().build();
+            System.out.println("UPDATED IS NULL");
+        }
         return ResponseEntity.ok(updated);
     }
 
     @PutMapping("/notification/{userId}")
-    public ResponseEntity<UserSettings> updateSettings(@PathVariable int userId,
-                                                       @RequestBody Map<String, Object> updates) {
-        UserSettings settings = settingsService.getSettingsByUserId(userId)
-                .orElse(new UserSettings(userId));
-
-        if (updates.containsKey("emailNotifications")) {
-            settings.setEmailNotifications((boolean) updates.get("emailNotifications"));
+    public ResponseEntity<UserSettings> updateNotification(@PathVariable int userId,@RequestBody UserSettings userSettings){
+        UserSettings updated=settingsService.updateNotification(userId,userSettings);
+        if(updated==null){
+            ResponseEntity.badRequest().build();
         }
-        if (updates.containsKey("dueDateReminders")) {
-            settings.setDueDateReminders((boolean) updates.get("dueDateReminders"));
-        }
-        return ResponseEntity.ok(settingsService.saveOrUpdateSettings(userId, settings));
+        return ResponseEntity.ok(updated);
     }
 
 }

@@ -50,13 +50,41 @@ function saveSettings(settingsPatch) {
   return updated
 }
 
-function saveSettingsToBackend(settingsPatch) {
+function savePreferencesToBackend(settingsPatch) {
   const updated = saveSettings(settingsPatch)
 
   const currentUserId = getUserId()
-  console.log("Current User ID:"+currentUserId)
+  console.log("Current User ID:" + currentUserId)
   if (currentUserId) {
-    fetch(`/api/settings/${currentUserId}`, {
+    payload={
+      defaultPriority:updated["default-priority"],
+      dueDateReminders:updated["due-date-reminders"],
+      taskSounds:updated["task-sounds"],
+      tasksPerPage:updated["tasks-per-page"],
+      theme:updated["theme"]
+    }
+    console.log("PAYLOAD")
+    console.log(payload)
+    fetch(`/api/settings/preferences/${currentUserId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    }).catch((err) => console.error("Failed to sync settings:", err))
+  } else {
+    console.warn("No user ID available for persisting settings")
+  }
+
+
+  return Promise.resolve(updated)
+}
+
+function saveNotificationToBackend(settingsPatch) {
+  const updated = saveSettings(settingsPatch)
+
+  const currentUserId = getUserId()
+  console.log("Current User ID:" + currentUserId)
+  if (currentUserId) {
+    fetch(`/api/settings/preferences/${currentUserId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updated),
@@ -128,9 +156,10 @@ function showSecuritySectionForRegisteredUsers() {
 
 
 function getUserId() {
-  const userData = getStoredUser()
+  const userData = JSON.parse(localStorage.getItem("taskmaster_user")) || null
+  console.log("LOGGING USER DATA")
   console.log(userData)
-  return userData?.user_id || userData?.user_id || null
+  return userData.id || userData.user_id || null
 }
 
 function checkAuthentication() {
@@ -187,18 +216,21 @@ function setupUserSettings() {
   }
 
   // Infer defaults from DOM controls
-  const defaults = {
-    theme: inferredTheme,
-    "task-sounds": Boolean(document.getElementById("task-sounds")?.checked),
-    "due-date-reminders": Boolean(document.getElementById("due-date-reminders")?.checked),
-    "default-priority": document.getElementById("default-priority")?.value || "medium",
-    "tasks-per-page": document.getElementById("tasks-per-page")?.value || "25",
-    "email-notifications": Boolean(document.getElementById("email-notifications")?.checked),
-    // Note: notifications section uses camelCase id
-    dueDateReminders: Boolean(document.getElementById("dueDateReminders")?.checked),
-  }
+  // const defaults = {
+  //   theme: inferredTheme,
+  //   "task-sounds": Boolean(document.getElementById("task-sounds")?.checked),
+  //   "due-date-reminders": Boolean(document.getElementById("due-date-reminders")?.checked),
+  //   "default-priority": document.getElementById("default-priority")?.value || "medium",
+  //   "tasks-per-page": document.getElementById("tasks-per-page")?.value || "25",
+  //   "email-notifications": Boolean(document.getElementById("email-notifications")?.checked),
+  //   // Note: notifications section uses camelCase id
+  //   dueDateReminders: Boolean(document.getElementById("dueDateReminders")?.checked),
+  // }
 
-  userSettings = { ...defaults, ...stored }
+  // userSettings = { ...defaults, ...stored }
+  userSettings=stored
+  console.log("USER SETTINGS:")
+  console.log(userSettings)
   // Persist merged defaults to ensure consistency
   saveSettings(userSettings)
 }
@@ -550,13 +582,15 @@ function resetSectionModifiedState(sectionId) {
 async function handlePreferencesSave() {
   try {
     const settings = collectPreferencesSettings()
-
+    
+    console.log("SETTINGS")
+    console.log(settings)
     if (Object.keys(settings).length === 0) {
       showNotification("No preference changes to save", "info")
       return
     }
 
-    await saveSettingsToBackend(settings)
+    await savePreferencesToBackend(settings)
     userSettings = { ...userSettings, ...settings }
     console.log(userSettings)
 
@@ -626,8 +660,8 @@ function collectNotificationsSettings() {
   if (emailNotifications) settings["email-notifications"] = emailNotifications.checked
 
   // Task reminders (Notifications section uses camelCase id)
-  const taskReminders = document.getElementById("dueDateReminders")
-  if (taskReminders) settings.dueDateReminders = taskReminders.checked
+  const taskReminders = document.getElementById("task-reminders")
+  if (taskReminders) settings["task-reminders"] = taskReminders.checked
 
   return settings
 }

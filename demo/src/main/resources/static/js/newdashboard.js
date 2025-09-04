@@ -17,16 +17,9 @@ document.addEventListener("DOMContentLoaded", () => {
 let tasks = []
 let currentFilter = "all"
 let currentPriorityFilter = null
-// window.userSettings = {
-//   theme: "light",
-//   "task-sounds": false,
-//   "due-date-reminders": false,
-//   "email-notifications": false,
-//   "task-reminders": false,
-//   "default-priority": "medium",
-//   "tasks-per-page": 25
-// }
-let userSettings=null
+
+let userSettings = null
+let userProfile = null;
 // ============================================================================
 // THEME & SETTINGS MANAGEMENT
 // ============================================================================
@@ -42,9 +35,6 @@ function toggleDarkMode() {
 function applyTheme(theme) {
   document.documentElement.classList.toggle("dark", theme === "dark")
   document.body.classList.toggle("dark-mode", theme === "dark")
-
-  // document.documentElement.classList.toggle("light", theme === "light")
-  // document.body.classList.toggle("light-mode", theme === "light")
 }
 
 function updateDarkModeToggle(theme) {
@@ -59,44 +49,6 @@ function updateDarkModeToggle(theme) {
     text.textContent = "Dark Mode"
   }
 }
-
-// function persistSettings() {
-//   localStorage.setItem("taskmaster_settings", JSON.stringify(userSettings))
-//   localStorage.setItem("taskmaster_settings_timestamp", Date.now().toString())
-
-//   const currentUserId = getUserId()
-//   if (currentUserId) {
-//     fetch(`/api/settings/${currentUserId}`, {
-//       method: "PUT",
-//       headers: { "Content-Type": "application/json" },
-//       body: JSON.stringify(userSettings),
-//     }).catch((err) => console.error("Failed to sync settings:", err))
-//   } else {
-//     console.warn("No user ID available for persisting settings")
-//   }
-// }
-
-// Function to save specific settings
-// function saveSetting(key, value) {
-//   userSettings[key] = value
-//   // persistSettings()
-
-//   // Apply the setting immediately to UI
-//   if (key === "theme") {
-//     applyTheme(value)
-//     updateDarkModeToggle(value)
-//   }
-
-//   // Store individual setting for immediate use
-//   localStorage.setItem(`setting_${key}`, value)
-
-//   console.log(`Setting updated: ${key} = ${value}`)
-// }
-
-// Function to get a specific setting
-// function getSetting(key, defaultValue = null) {
-//   return userSettings[key] !== undefined ? userSettings[key] : defaultValue
-// }
 
 // Function to update settings from external changes (e.g., from settings page)
 function updateSettingsFromExternal(newSettings) {
@@ -306,7 +258,7 @@ function getUserId() {
     const userData = localStorage.getItem("taskmaster_user")
     if (userData) {
       try {
-        userId = JSON.parse(userData).user_id
+        userId = JSON.parse(userData).id || JSON.parse(userData).user_id
       } catch (error) {
         console.error("Failed to parse user data:", error)
         userId = null
@@ -320,10 +272,7 @@ async function loadUserData() {
   try {
     // Check cache first to reduce server calls
     const cachedUser = localStorage.getItem("taskmaster_user")
-    // const cacheTimestamp = localStorage.getItem("taskmaster_user_timestamp")
-    // const cacheAge = Date.now() - Number.parseInt(cacheTimestamp || "0")
 
-    // Use cache if less than 5 minutes old
     if (cachedUser) {
       const userData = JSON.parse(cachedUser)
       updateUserGreeting(userData)
@@ -535,7 +484,8 @@ async function syncTaskUpdate(task) {
     showNotification(`Task ${action}!`, "success")
 
     // Play completion sound if enabled
-    if (task.completed && userSettings.taskSounds) {
+    console.log(userSettings["task-sounds"])
+    if (task.completed && userSettings["task-sounds"]) {
       playCompletionSound()
     }
   } catch (error) {
@@ -556,7 +506,7 @@ async function syncTaskUpdate(task) {
 function playCompletionSound() {
   try {
     const audio = new Audio("/sound/Completion.mp3")
-    audio.volume = 0.5 // Set reasonable volume
+    audio.volume = 0.7 // Set reasonable volume
     audio.play().catch((error) => {
       console.warn("Could not play completion sound:", error)
     })
@@ -576,21 +526,8 @@ async function initializeDashboard() {
     // Show loading state
     showLoadingState(true)
 
-    // Load critical data in parallel where possible
-    // const [userData, settings] = await Promise.allSettled([loadUserData(), loadSettingsFromDB()])
-    let userData=null;
-    let settings=null;
-
-    if(localStorage.getItem("taskmaster_settings")){
-      settings=JSON.parse(localStorage.getItem("taskmaster_settings"))
-      console.log("parsing")
-      console.log(settings)
-      userSettings=settings
-    }else{
-      settings= await loadSettingsFromDB()
-    }
-    userData= await loadUserData()
-    
+    let userData = await loadUserData()
+    let settings = await loadSettingsFromDB()
 
     console.log(userData)
     console.log(settings)
@@ -672,56 +609,8 @@ function setupEventListeners() {
   document.getElementById("edit-task-form").addEventListener("submit", handleEditTask)
   document.addEventListener("click", handleGlobalClick)
   document.addEventListener("keydown", handleGlobalKeydown)
-
-  // Listen for page visibility changes to sync settings when user returns
-  // document.addEventListener("visibilitychange", handleVisibilityChange)
-
-  // Listen for page focus to sync settings when user returns from another tab
-  // window.addEventListener("focus", handlePageFocus)
-
-  // Listen for storage changes from other tabs/pages
-  // window.addEventListener("storage", handleStorageChange)
 }
 
-// function handleVisibilityChange() {
-//   if (!document.hidden) {
-//     // Page became visible - check if settings need to be refreshed
-//     const lastSettingsUpdate = localStorage.getItem("taskmaster_settings_timestamp")
-//     const currentTime = Date.now()
-
-//     // If it's been more than 5 seconds since last settings update, refresh
-//     if (!lastSettingsUpdate || (currentTime - parseInt(lastSettingsUpdate)) > 5000) {
-//       loadSettingsFromDB().then(() => {
-//         applyUserSettings()
-//       }).catch(err => {
-//         console.warn("Failed to refresh settings:", err)
-//       })
-//     }
-//   }
-// }
-
-// function handlePageFocus() {
-//   // When page gains focus, check for settings updates
-//   const lastSettingsUpdate = localStorage.getItem("taskmaster_settings_timestamp")
-//   const currentTime = Date.now()
-
-//   // If it's been more than 2 seconds since last settings update, refresh
-//   // if (!lastSettingsUpdate || (currentTime - parseInt(lastSettingsUpdate)) > 2000) {
-//   //   syncSettingsFromLocalStorage()
-//   // }
-// }
-
-// function handleStorageChange(event) {
-//   // Handle storage changes from other tabs/pages
-//   if (event.key === "taskmaster_settings" || event.key === "taskmaster_settings_timestamp") {
-//     console.log("Settings changed in another tab:", event.key)
-
-//     // Small delay to ensure the change is complete
-//     // setTimeout(() => {
-//     //   syncSettingsFromLocalStorage()
-//     // }, 100)
-//   }
-// }
 
 function handleGlobalClick(event) {
   const userMenu = document.getElementById("user-menu")
@@ -754,30 +643,25 @@ async function loadSettingsFromDB() {
       return
     }
 
-    const res = await fetch(`/api/settings/${currentUserId}`)
+    const res = await fetch(`/api/settings/${currentUserId}`, {
+      method: "GET"
+    })
     if (res.ok) {
       const settings = await res.json()
       // Merge all settings from backend with defaults
       console.log(settings)
       let fetchedSettings = {
-        // ...userSettings, // Keep defaults
-        // ...settings, // Override with backend values
-        // Ensure boolean values are properly converted
-        // "task-sounds": !!settings["task-sounds"],
-        // "due-date-reminders": !!settings["due-date-reminders"],
-        // "email-notifications": !!settings["email-notifications"],
-        // "task-reminders": !!settings["task-reminders"]
-        theme: settings.theme,
-        "task-sounds": settings.taskSounds,
-        "due-date-reminders": settings.dueDateReminders,
-        "email-notifications": settings.emailNotifications,
-        "task-reminders": settings.taskReminders,
-        "default-priority": settings.defaultPriority,
-        "tasks-per-page": settings.tasksPerPage
+        theme: settings["theme"],
+        "task-sounds": settings["taskSounds"],
+        "due-date-reminders": settings["dueDateReminders"],
+        "email-notifications": settings["emailNotifications"],
+        "task-reminders": settings["taskReminders"],
+        "default-priority": settings["defaultPriority"],
+        "tasks-per-page": settings["tasksPerPage"]
       }
       localStorage.setItem("taskmaster_settings", JSON.stringify(fetchedSettings))
       localStorage.setItem("taskmaster_settings_timestamp", Date.now().toString())
-      userSettings=fetchedSettings
+      userSettings = fetchedSettings
       console.log("Settings loaded from backend:", fetchedSettings)
       return fetchedSettings
     } else {
@@ -821,12 +705,8 @@ function applySettingsToUI(settings) {
     applyTheme(settings.theme)
     updateDarkModeToggle(settings.theme)
   }
-  
+
   console.log("Settings applied to UI:", settings)
-  // Apply default priority for new tasks
-  // if (settings["default-priority"] && document.getElementById("task-priority")) {
-  //   document.getElementById("task-priority").value = settings["default-priority"]
-  // }
 
   // Apply theme immediately
 }
@@ -1186,13 +1066,13 @@ const connectionMonitor = new ConnectionMonitor()
 // ============================================================================
 
 // Export settings management functions for external use
-window.SettingsManager = {
-//   // getSetting,
-//   // saveSetting,
-    updateSettingsFromExternal,
-//   // syncSettingsFromLocalStorage,
+// window.SettingsManager = {
+//   getSetting,
+//   saveSetting,
+//   updateSettingsFromExternal,
+//   syncSettingsFromLocalStorage,
 //   getCurrentSettings: () => ({ ...userSettings })
-}
+// }
 
 // Log initialization
 console.log("Dashboard initialized with settings:", userSettings)

@@ -24,7 +24,7 @@ public class PasswordResetToken {
     @JoinColumn(name = "user_id",referencedColumnName = "user_id")
     private AppUser user;
 
-    @Column(name = "email", nullable = false)
+    @Column(name = "email")
     private String email;
 
     @Column(nullable = false)
@@ -37,6 +37,7 @@ public class PasswordResetToken {
     public PasswordResetToken(AppUser user, String tokenHash, LocalDateTime expiry) {
         this.user=user;
         this.token=tokenHash;
+        this.email=user.getEmail();
         this.expiryDate=expiry;
     }
 }
