@@ -21,12 +21,12 @@ public class UserSettingsService {
     }
 
     public Optional<UserSettings> getSettingsByUserId(int userId) {
-//        return Optional.of(settingsRepo.findByUserId(userId).orElseGet(UserSettings::new));
         Optional<UserSettings> user=settingsRepo.findByUserId(userId);
         if (user.isPresent()){
             return user;
         }else{
             createNewUserSettings(userId);
+            System.out.println("NEW USER CREATED");
             return settingsRepo.findByUserId(userId);
         }
     }
@@ -62,6 +62,7 @@ public class UserSettingsService {
             settings.setTaskSounds(request.isTaskSounds());
             settings.setTasksPerPage(request.getTasksPerPage());
             settings.setTheme(request.getTheme());
+            settingsRepo.save(settings);
             return settings;
         }
         return null;
@@ -73,11 +74,10 @@ public class UserSettingsService {
             UserSettings settings = existing.get();
             settings.setTaskReminders(updatedSettings.isTaskReminders());
             settings.setEmailNotifications(updatedSettings.isEmailNotifications());
+            settingsRepo.save(settings);
             return settings;
-        }else{
-            createNewUserSettings(userId);
-            return settingsRepo.save(updatedSettings);
         }
+        return null;
     }
 
     public List<UserSettings> getUsersWithEmailNotificationsEnabled() {

@@ -7,13 +7,10 @@
     <list default="true" id="0cc5f8fb-7ba1-4853-b127-6239de5c0e05" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/controller/UserSettingsController.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/controller/UserSettingsController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/model/PasswordResetToken.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/model/PasswordResetToken.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/model/UserSettings.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/model/UserSettings.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/service/UserSettingsService.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/service/UserSettingsService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/resources/static/js/forgot-password.js" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/static/js/forgot-password.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/demo/src/main/resources/static/js/newdashboard.js" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/static/js/newdashboard.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/demo/src/main/resources/static/js/newsettings.js" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/static/js/newsettings.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/resources/templates/Settings.html" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/templates/Settings.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -122,6 +119,20 @@
           <url>file://$PROJECT_DIR$/demo/src/main/java/com/example/demo/service/OAuth2LoginSuccessHandler.java</url>
           <line>66</line>
           <option name="timeStamp" value="15" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/demo/src/main/java/com/example/demo/service/UserSettingsService.java</url>
+          <line>56</line>
+          <option name="timeStamp" value="24" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-method">
+          <url>file://$PROJECT_DIR$/demo/src/main/java/com/example/demo/service/UserSettingsService.java</url>
+          <line>22</line>
+          <properties class="com.example.demo.service.UserSettingsService" method="getSettingsByUserId">
+            <option name="EMULATED" value="true" />
+            <option name="WATCH_EXIT" value="false" />
+          </properties>
+          <option name="timeStamp" value="26" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

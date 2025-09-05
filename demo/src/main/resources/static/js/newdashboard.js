@@ -29,8 +29,10 @@ function toggleDarkMode() {
   userSettings.theme = userSettings.theme === "light" ? "dark" : "light"
   applyTheme(userSettings.theme)
   updateDarkModeToggle(userSettings.theme)
-  // persistSettings()
+  localStorage.removeItem("taskmaster_settings");
+  localStorage.setItem("taskmaster_settings",JSON.stringify(userSettings));
 }
+
 
 function applyTheme(theme) {
   document.documentElement.classList.toggle("dark", theme === "dark")
@@ -51,22 +53,22 @@ function updateDarkModeToggle(theme) {
 }
 
 // Function to update settings from external changes (e.g., from settings page)
-function updateSettingsFromExternal(newSettings) {
-  const updated = false
+// function updateSettingsFromExternal(newSettings) {
+//   const updated = false
 
-  Object.keys(newSettings).forEach(key => {
-    if (userSettings[key] !== newSettings[key]) {
-      userSettings[key] = newSettings[key]
-      updated = true
-    }
-  })
+//   Object.keys(newSettings).forEach(key => {
+//     if (userSettings[key] !== newSettings[key]) {
+//       userSettings[key] = newSettings[key]
+//       updated = true
+//     }
+//   })
 
-  if (updated) {
-    localStorage.setItem("taskmaster_settings", JSON.stringify(userSettings))
-    applySettingsToUI(userSettings)
-    console.log("Settings updated from external source:", newSettings)
-  }
-}
+//   if (updated) {
+//     localStorage.setItem("taskmaster_settings", JSON.stringify(userSettings))
+//     applySettingsToUI(userSettings)
+//     console.log("Settings updated from external source:", newSettings)
+//   }
+// }
 
 // ============================================================================
 // NOTIFICATIONS & USER FEEDBACK
@@ -643,26 +645,27 @@ async function loadSettingsFromDB() {
       return
     }
 
-    const res = await fetch(`/api/settings/${currentUserId}`, {
-      method: "GET"
-    })
+    const res = await fetch(`/api/settings/${currentUserId}`)
     if (res.ok) {
       const settings = await res.json()
-      // Merge all settings from backend with defaults
+      console.log("Fetched Settings")
       console.log(settings)
-      let fetchedSettings = {
-        theme: settings["theme"],
-        "task-sounds": settings["taskSounds"],
-        "due-date-reminders": settings["dueDateReminders"],
-        "email-notifications": settings["emailNotifications"],
-        "task-reminders": settings["taskReminders"],
-        "default-priority": settings["defaultPriority"],
-        "tasks-per-page": settings["tasksPerPage"]
-      }
+      // Merge all settings from backend with defaults
+
+      // let fetchedSettings = {
+      //   theme: settings["theme"],
+      //   "task-sounds": settings["taskSounds"],
+      //   "due-date-reminders": settings["dueDateReminders"],
+      //   "email-notifications": settings["emailNotifications"],
+      //   "task-reminders": settings["taskReminders"],
+      //   "default-priority": settings["defaultPriority"],
+      //   "tasks-per-page": settings["tasksPerPage"]
+      // }
+      let fetchedSettings=settings
       localStorage.setItem("taskmaster_settings", JSON.stringify(fetchedSettings))
       localStorage.setItem("taskmaster_settings_timestamp", Date.now().toString())
       userSettings = fetchedSettings
-      console.log("Settings loaded from backend:", fetchedSettings)
+      // console.log("Settings loaded from backend:", fetchedSettings)
       return fetchedSettings
     } else {
       const local = localStorage.getItem("taskmaster_settings")
@@ -677,8 +680,8 @@ async function loadSettingsFromDB() {
 
 function applyUserSettings() {
   console.log("Applying user Settings")
-  console.log(userSettings)
-  console.log(userSettings.theme)
+  // console.log(userSettings)
+  // console.log(userSettings.theme)
   applyTheme(userSettings.theme)
   updateDarkModeToggle(userSettings.theme)
 
