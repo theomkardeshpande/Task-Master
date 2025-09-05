@@ -5,6 +5,7 @@
 const STORAGE_KEYS = {
   user: "taskmaster_user",
   settings: "taskmaster_settings",
+  profilePicUrl: "profile_picture_url"
 }
 
 function safeParse(json, fallback = null) {
@@ -28,7 +29,6 @@ function setStoredUser(user) {
 async function saveProfileDetails(user) {
   payload = {
     fullname: user.fullname,
-    email: user.email,
     bio: user.bio,
   }
   const response = await fetch(`user/${getUserId()}/profile`, {
@@ -54,7 +54,7 @@ function saveSettings(settingsPatch) {
 
 
 function savePreferencesToBackend(settingsPatch) {
-  let updated=null
+  let updated = null
   const currentUserId = getUserId()
   console.log("Current User ID:" + currentUserId)
   if (currentUserId) {
@@ -83,7 +83,7 @@ function savePreferencesToBackend(settingsPatch) {
 }
 
 function saveNotificationToBackend(settingsPatch) {
-  let updated=null;
+  let updated = null;
 
   const currentUserId = getUserId()
   console.log("Current User ID:" + currentUserId)
@@ -92,12 +92,12 @@ function saveNotificationToBackend(settingsPatch) {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(settingsPatch),
-    }).then(async(res)=>{
-        if(res.ok){
-          updated=res.json()
-          console.log("Updated Notification")
-          console.log(updated)
-        }
+    }).then(async (res) => {
+      if (res.ok) {
+        updated = res.json()
+        console.log("Updated Notification")
+        console.log(updated)
+      }
     }).catch((err) => console.error("Failed to sync settings:", err))
   } else {
     console.warn("No user ID available for persisting settings")
@@ -230,6 +230,29 @@ function setupUserSettings() {
   console.log(userSettings)
   // Persist merged defaults to ensure consistency
   saveSettings(userSettings)
+  checkProfilePicture()
+}
+
+async function checkProfilePicture() {
+  const userId = getUserId()
+
+  const response = await fetch(`/user/${userId}/profile-picture`, {
+    method: "GET"
+  })
+  if (response.ok) {
+    const blob = await response.blob();                 // Response -> Blob
+    const url = URL.createObjectURL(blob);
+    const avatarDiv = document.querySelector(".w-20.h-20.bg-blue-600.rounded-full")
+    if (avatarDiv) {
+      avatarDiv.innerHTML = `<img id="profile_picture" alt="Profile Picture" class="w-20 h-20 rounded-full object-cover" />`
+    }
+    const picture = document.getElementById("profile_picture")
+    picture.src=url;
+    picture.onload = () => URL.revokeObjectURL(url);
+  }
+  if(!response.ok){
+    throw new Error("Profile Picture Not Fetched")
+  }
 }
 
 /* ============================================================================
@@ -357,14 +380,12 @@ async function handleProfileUpdate(event) {
     const user = getStoredUser() || {}
     const firstName = formData.get("firstName")?.toString().trim() || ""
     const lastName = formData.get("lastName")?.toString().trim() || ""
-    const email = formData.get("email")?.toString().trim() || ""
     const bio = formData.get("bio")?.toString().trim() || ""
 
     // Update local user model
     const updatedUser = {
       ...user,
       fullname: `${firstName} ${lastName}`.trim(),
-      email,
       bio,
     }
 
@@ -587,9 +608,9 @@ async function handlePreferencesSave() {
       return
     }
 
-    const updated=await savePreferencesToBackend(settings)
+    const updated = await savePreferencesToBackend(settings)
     console.log(updated)
-    userSettings = { ...settings,...updated }
+    userSettings = { ...settings, ...updated }
     console.log(userSettings)
     saveSettings(userSettings)
     resetSectionModifiedState("preferences-section")
@@ -639,7 +660,7 @@ async function handleNotificationsSave() {
       return
     }
 
-    let updated=await saveNotificationToBackend(settings)
+    let updated = await saveNotificationToBackend(settings)
     userSettings = { ...settings, ...updated }
     saveSettings(userSettings)
 
@@ -768,21 +789,21 @@ function setupSystemThemeListener() {
 
 function validateProfileData(formData) {
   const firstName = formData.get("firstName")?.toString().trim()
-  const email = formData.get("email")?.toString().trim()
+  // const email = formData.get("email")?.toString().trim()
   const profilePicture = formData.get("profilePicture")
 
   if (!firstName) {
     return { isValid: false, message: "First name is required" }
   }
 
-  if (!email) {
-    return { isValid: false, message: "Email address is required" }
-  }
+  // if (!email) {
+  //   return { isValid: false, message: "Email address is required" }
+  // }
 
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  if (!emailRegex.test(email)) {
-    return { isValid: false, message: "Please enter a valid email address" }
-  }
+  // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  // if (!emailRegex.test(email)) {
+  //   return { isValid: false, message: "Please enter a valid email address" }
+  // }
 
   if (profilePicture instanceof File && profilePicture.size > 0) {
     const maxSize = 2 * 1024 * 1024 // 2MB

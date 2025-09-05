@@ -30,7 +30,7 @@ function toggleDarkMode() {
   applyTheme(userSettings.theme)
   updateDarkModeToggle(userSettings.theme)
   localStorage.removeItem("taskmaster_settings");
-  localStorage.setItem("taskmaster_settings",JSON.stringify(userSettings));
+  localStorage.setItem("taskmaster_settings", JSON.stringify(userSettings));
 }
 
 
@@ -314,8 +314,35 @@ function updateUserGreeting(userData) {
     const name = userData.fullname || userData.name || "User"
     greeting.textContent = `Welcome back, ${name.split(" ")[0]}!`
     greeting.classList.remove("hidden")
+    saveProfilePicture()
   }
 }
+
+async function saveProfilePicture() {
+  const userId = getUserId();
+  const img = document.getElementById("user");
+  const icon = document.getElementById("fa-user");
+
+  await fetch(`/user/${userId}/profile-picture`, {
+    method: "GET"
+  }).then(async (res) => {
+    if (res.ok) {
+      const blob = await res.blob();                 // Response -> Blob
+      const url = URL.createObjectURL(blob);         // Blob -> object URL
+      localStorage.setItem("profilePicUrl",url)
+      img.src = url;
+      img.classList.remove("hidden");
+      icon.classList.add("hidden");                                 // display image
+      img.onload = () => URL.revokeObjectURL(url);
+    }
+    if (!res.ok) {
+      img.classList.add("hidden");
+      icon.classList.remove("hidden");
+      throw new Error(`HTTP ${res.status}`);
+    }
+  })
+}
+
 
 // ============================================================================
 // TASK MANAGEMENT & OPERATIONS
@@ -661,7 +688,7 @@ async function loadSettingsFromDB() {
       //   "default-priority": settings["defaultPriority"],
       //   "tasks-per-page": settings["tasksPerPage"]
       // }
-      let fetchedSettings=settings
+      let fetchedSettings = settings
       localStorage.setItem("taskmaster_settings", JSON.stringify(fetchedSettings))
       localStorage.setItem("taskmaster_settings_timestamp", Date.now().toString())
       userSettings = fetchedSettings

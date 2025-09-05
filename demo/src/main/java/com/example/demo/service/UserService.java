@@ -72,7 +72,6 @@ public class UserService {
 
         updatedUser.setFullname(request.getFullname());
         updatedUser.setBio(request.getBio());
-        updatedUser.setEmail(request.getEmail());
 
         userRepository.save(updatedUser);
         updateAuthenticatedPrincipal(updatedUser);
