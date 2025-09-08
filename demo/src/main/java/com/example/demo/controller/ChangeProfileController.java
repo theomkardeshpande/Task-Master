@@ -5,10 +5,8 @@ import com.example.demo.dto.ProfileChangeRequest;
 import com.example.demo.model.AppUser;
 import com.example.demo.repository.UserRepo;
 import com.example.demo.service.UserService;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.io.Resource;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
@@ -71,15 +69,41 @@ public class ChangeProfileController {
 
 
     @PutMapping("/{userId}/change-password")
-    public ResponseEntity<?> changePassword(
+    public ResponseEntity<String> changePassword(
             @PathVariable int userId,
             @RequestBody PasswordChangeRequest request
     ) {
         try {
-            userService.changePassword(userId, request);
-            return ResponseEntity.ok("Password is Updated Successfully");
+            String response=userService.changePassword(userId, request);
+            if(response.equals("Password is updated")){
+                return ResponseEntity.ok("Password is Updated Successfully");
+            }else {
+                return ResponseEntity.badRequest().body(response);
+            }
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    @DeleteMapping("/{userId}/delete-account")
+    public ResponseEntity<String> deleteAccount(@PathVariable int userId){
+        String email=userService.deleteAccount(userId);
+        if(email==null){
+            return ResponseEntity.badRequest().body("User Not Found");
+        }else {
+            return ResponseEntity.ok(email+" User Account is deleted");
+        }
+    }
+
+    @GetMapping("/{userId}/export-data")
+    public ResponseEntity<?> exportData(@PathVariable int userId) throws Exception {
+        Resource resource = userService.exportUserData(userId); // returns ByteArrayResource
+        String filename = "user-" + userId + "-export.json";
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON) // tell client it's JSON
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        ContentDisposition.attachment().filename(filename).build().toString()) // download as file
+                .body(resource);
     }
 }

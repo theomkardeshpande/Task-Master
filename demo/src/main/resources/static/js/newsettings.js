@@ -74,11 +74,6 @@ function savePreferencesToBackend(settingsPatch) {
   } else {
     console.warn("No user ID available for persisting settings")
   }
-  // const newresponse=saveSettings(updated)
-  // if(newresponse){
-  //   console.log("Preferences Updated And set to local storage")
-  // }
-  // return Promise.resolve(updated)
   return updated
 }
 
@@ -218,17 +213,9 @@ function setupUserSettings() {
   // Ensure defaults based on current DOM state if nothing stored
   const stored = getSettings()
 
-  // Default theme to "light" unless a radio is selected in DOM
-  // let inferredTheme = stored.theme
-  // if (!inferredTheme) {
-  //   const checkedTheme = document.querySelector('input[name="theme"]:checked')
-  //   inferredTheme = checkedTheme?.value || "light"
-  // }
-
   userSettings = stored
   console.log("USER SETTINGS:")
   console.log(userSettings)
-  // Persist merged defaults to ensure consistency
   saveSettings(userSettings)
   checkProfilePicture()
 }
@@ -247,11 +234,12 @@ async function checkProfilePicture() {
       avatarDiv.innerHTML = `<img id="profile_picture" alt="Profile Picture" class="w-20 h-20 rounded-full object-cover" />`
     }
     const picture = document.getElementById("profile_picture")
-    picture.src=url;
+    picture.src = url;
     picture.onload = () => URL.revokeObjectURL(url);
   }
-  if(!response.ok){
-    throw new Error("Profile Picture Not Fetched")
+  if (!response.ok) {
+    console.log("No Profile Picture Found")
+    // throw new Error("Profile Picture Not Fetched")
   }
 }
 
@@ -537,17 +525,73 @@ function setupSectionSaveButtons() {
     saveNotificationsBtn.addEventListener("click", handleNotificationsSave)
   }
 
-  // Security
-  const saveSecurityBtn = document.getElementById("save-security-btn")
-  if (saveSecurityBtn) {
-    saveSecurityBtn.addEventListener("click", (e) => {
-      e.preventDefault()
-      handleSecuritySave()
-    })
+
+  const deleteAccountBtn = document.getElementById("delete-account-btn")
+  if (deleteAccountBtn) {
+    deleteAccountBtn.addEventListener("click", deleteAccount)
+  }
+
+  const exportAccountBtn = document.getElementById("export-account-btn")
+  if (exportAccountBtn) {
+    exportAccountBtn.addEventListener("click", exportAccount)
   }
 
   // Change tracking
   setupChangeTracking()
+}
+
+async function deleteAccount() {
+  if (!window.confirm("Delete account permanently? This cannot be undone.")) return;  // user canceled [web:549]
+
+  const userId = getUserId();  // assume this returns a valid id [web:551]
+  const response = await fetch(`/user/${userId}/delete-account`, { method: "DELETE" });  // DELETE call [web:170]
+
+  const text = await response.text();  // MUST await to get the string [web:170]
+  if (response.ok) {
+    alert(text || "Account deleted");  // show server message if any [web:549]
+    window.location.href = "/";        // redirect after success [web:561]
+  } else {
+    alert(text || `Failed: HTTP ${response.status}`);  // show error body or fallback [web:170]
+  }
+}
+
+
+async function exportAccount() {
+  if (!window.confirm("Do You Want To Export Your Account Data..?")) return;  // user canceled [web:549]
+
+  const userId = getUserId();
+  const response = await fetch(`/user/${userId}/export-data`, { method: "GET" });
+
+  const blob = await response.blob()
+
+  const cd = response.headers.get("content-disposition") || "";
+  const filename = extractFilename(cd) || `user-${userId}-export.json`; // [2][4]
+
+  // 5) Create object URL and trigger download
+  const url = URL.createObjectURL(blob); // [19]
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.style.display = "none";
+  document.body.appendChild(a);
+  a.click();
+
+  // 6) Cleanup
+  document.body.removeChild(a);
+  // It’s generally safe to revoke shortly after click; or delay with setTimeout if needed. [10]
+  URL.revokeObjectURL(url); // [16]
+}
+
+function extractFilename(disposition) {
+  if (!disposition) return null;
+  // filename* (RFC 5987) has priority
+  const matchStar = /filename\*\s*=\s*([^']*)''([^;]+)/i.exec(disposition);
+  if (matchStar) {
+    try { return decodeURIComponent(matchStar); } catch { /* ignore */ }
+  }
+  // fallback: filename="name.ext" or filename=name.ext
+  const match = /filename\s*=\s*\"?([^\";]+)\"?/i.exec(disposition);
+  return match ? match : null;
 }
 
 function setupChangeTracking() {
@@ -705,18 +749,35 @@ function handleSecuritySave() {
     return
   }
 
-  // Simulate a successful update (no backend in this context)
-  // Optionally store timestamp or a flag
-  const audit = { passwordUpdatedAt: new Date().toISOString() }
-  saveSettings({ securityAudit: audit })
 
   resetSectionModifiedState("security-section")
   // Clear fields
   document.getElementById("current-password").value = ""
   document.getElementById("new-password").value = ""
   document.getElementById("confirm-new-password").value = ""
+  savePasswordToBackend(currentPassword, newPassword, confirmNewPassword)
 
-  showNotification("Password updated successfully!", "success")
+}
+
+async function savePasswordToBackend(current, newPass, confirm) {
+  const userId = getUserId()
+  const response = await fetch(`user/${userId}/change-password`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      currentPassword: current.trim(),
+      newPassword: newPass.trim(),
+      confirmNewPassword: confirm.trim(),
+    })
+  })
+  const txt = await response.text()
+  console.log(txt)
+  if (response.ok) {
+    showNotification("Password updated successfully!", "success")
+  }
+  if (!response.ok) {
+    showNotification(txt, "error")
+  }
 }
 
 /* ============================================================================
@@ -796,15 +857,6 @@ function validateProfileData(formData) {
     return { isValid: false, message: "First name is required" }
   }
 
-  // if (!email) {
-  //   return { isValid: false, message: "Email address is required" }
-  // }
-
-  // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  // if (!emailRegex.test(email)) {
-  //   return { isValid: false, message: "Please enter a valid email address" }
-  // }
-
   if (profilePicture instanceof File && profilePicture.size > 0) {
     const maxSize = 2 * 1024 * 1024 // 2MB
     const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"]
@@ -866,7 +918,7 @@ function showNotification(message, type = "success") {
   setTimeout(() => {
     div.style.opacity = "0"
     div.style.transform = "translateY(-20px)"
-    setTimeout(() => div.remove(), 300)
+    setTimeout(() => div.remove(), 500)
   }, 3000)
 }
 

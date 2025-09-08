@@ -3,7 +3,9 @@ package com.example.demo.service;
 import com.example.demo.dto.*;
 import com.example.demo.model.AppUser;
 import com.example.demo.model.CustomUserDetails;
+import com.example.demo.model.PasswordResetToken;
 import com.example.demo.model.Task;
+import com.example.demo.repository.PasswordResetTokenRepo;
 import com.example.demo.repository.TaskRepo;
 import com.example.demo.repository.UserRepo;
 import com.example.demo.security.JwtUtil;
@@ -34,13 +36,15 @@ public class UserService {
     private final JwtUtil jwtUtil;
     private final TaskRepo taskRepo;
     private final ObjectMapper objectMapper;
+    private final PasswordResetTokenRepo resetTokenRepo;
 
-    public UserService(UserRepo repo, PasswordEncoder enc, JwtUtil jwtUtil, TaskRepo taskRepo, ObjectMapper objectMapper) {
+    public UserService(UserRepo repo, PasswordEncoder enc, JwtUtil jwtUtil, TaskRepo taskRepo, ObjectMapper objectMapper, PasswordResetTokenRepo resetTokenRepo) {
         this.userRepository = repo;
         this.passwordEncoder = enc;
         this.jwtUtil = jwtUtil;
         this.taskRepo = taskRepo;
         this.objectMapper = objectMapper;
+        this.resetTokenRepo=resetTokenRepo;
     }
 
     public UserResponse registerNewUser(RegisterRequest req) {
@@ -96,20 +100,23 @@ public class UserService {
     }
 
     @Transactional
-    public void changePassword(int id, PasswordChangeRequest request) {
+    public String changePassword(int id, PasswordChangeRequest request) {
 
         try {
             AppUser user = userRepository.findById(id);
             if (user == null) {
-                throw new RuntimeException("User not Found");
+//                throw new RuntimeException("User not Found");
+                return "User not Found";
             }
 
             if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
-                throw new RuntimeException("Current Password is Incorrect");
+//                throw new RuntimeException("Current Password is Incorrect");
+                return "Current Password is Incorrect";
             }
 
             if (!request.getNewPassword().equals(request.getConfirmNewPassword())) {
-                throw new RuntimeException("New Password and Confirm Password do not Match");
+//                throw new RuntimeException("New Password and Confirm Password do not Match");
+                return "New Password and Confirm Password do not Match";
             }
 
             String hashedPassword = passwordEncoder.encode(request.getNewPassword());
@@ -118,23 +125,24 @@ public class UserService {
             userRepository.save(user);
 
             updateAuthenticatedPrincipal(user);
-
+            return "Password is updated";
         } catch (Exception e) {
             System.out.println(e.toString());
+            return e.toString();
         }
 
     }
 
     @Transactional
-    public void deleteAccount(int userId) {
+    public String deleteAccount(int userId) {
         AppUser user = userRepository.findById(userId);
-
         if (user == null) {
-            throw new IllegalArgumentException("User Not Found..!");
+            return null;
         }
-
+        resetTokenRepo.deleteByUserId(user.getUser_id());
         taskRepo.deleteByUserEmail(user.getEmail());
         userRepository.delete(user);
+        return user.getEmail();
     }
 
     public Resource exportUserData(int userId) throws Exception {
@@ -157,18 +165,6 @@ public class UserService {
         return new ByteArrayResource(jsonData.getBytes());
     }
 
-    private void validatePasswordChangeRequest(PasswordChangeRequest request) {
-        if (!request.getNewPassword().equals(request.getConfirmNewPassword())) {
-            throw new IllegalArgumentException("New passwords do not match");
-        }
-
-        if (!PASSWORD_PATTERN.matcher(request.getNewPassword()).matches()) {
-            throw new IllegalArgumentException(
-                    "Password must be at least 8 characters long and contain at least one uppercase letter, " +
-                            "one lowercase letter, one digit, and one special character"
-            );
-        }
-    }
 
     private Map<String, Object> createUserExportData(AppUser user) {
         Map<String, Object> userData = new HashMap<>();

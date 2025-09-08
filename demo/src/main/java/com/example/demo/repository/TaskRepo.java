@@ -7,18 +7,17 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface TaskRepo extends JpaRepository<Task, Integer> {
 
     List<Task> findByUserEmail(String email);
 
-    @Modifying
-    @Query("DELETE FROM Task t WHERE t.userEmail = :userEmail")
-    List<Task> deleteByUserEmail(@Param("email") String email);
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("DELETE FROM Task t WHERE t.userEmail = :email")
+    void deleteByUserEmail(@Param("email") String email);
 
-    List<Task> findByUserEmailOrderByCreatedDateDesc (String userEmail);
+    List<Task> findByUserEmailOrderByCreatedDateDesc (String email);
     @Query("SELECT t FROM Task t " +
             "WHERE t.id = :userId " +
             "AND t.dueDate BETWEEN :startDate AND :endDate " +
