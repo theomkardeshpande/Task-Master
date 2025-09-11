@@ -40,6 +40,9 @@ public class AppUser {
 
     private String bio;
 
+    @Column(nullable = false)
+    private boolean verified=false;
+
     @Lob
     private byte[] profilePicture;
     

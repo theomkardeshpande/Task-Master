@@ -52,12 +52,15 @@
         <url/>
     </scm>
     <properties>
-        <java.version>17</java.version>
+        <java.version>19</java.version>
+        <maven.compiler.release>19</maven.compiler.release>
     </properties>
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-jpa -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
+            <version>3.5.5</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.mysql/mysql-connector-j -->
         <dependency>
@@ -193,6 +196,17 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <forkCount>1</forkCount>
+                    <reuseForks>false</reuseForks>
+                    <environmentVariables>
+                        <app.jwt.secret>tXXv2p9c4EZ/O6R/4TGSYk7HVlwy/bRAjRwB+hrDBd4=</app.jwt.secret>
+                    </environmentVariables>
                 </configuration>
             </plugin>
         </plugins>

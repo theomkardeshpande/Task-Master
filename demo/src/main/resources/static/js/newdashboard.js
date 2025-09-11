@@ -52,24 +52,6 @@ function updateDarkModeToggle(theme) {
   }
 }
 
-// Function to update settings from external changes (e.g., from settings page)
-// function updateSettingsFromExternal(newSettings) {
-//   const updated = false
-
-//   Object.keys(newSettings).forEach(key => {
-//     if (userSettings[key] !== newSettings[key]) {
-//       userSettings[key] = newSettings[key]
-//       updated = true
-//     }
-//   })
-
-//   if (updated) {
-//     localStorage.setItem("taskmaster_settings", JSON.stringify(userSettings))
-//     applySettingsToUI(userSettings)
-//     console.log("Settings updated from external source:", newSettings)
-//   }
-// }
-
 // ============================================================================
 // NOTIFICATIONS & USER FEEDBACK
 // ============================================================================
@@ -283,8 +265,8 @@ async function loadUserData() {
 
     const response = await apiClient.fetchWithRetry("/user/profile")
     const userData = await response.json()
-    console.log(userData)
-    console.log("CACHED USER" + cachedUser)
+//    console.log(userData)
+//    console.log("CACHED USER" + cachedUser)
     // Cache user data with timestamp
     localStorage.setItem("taskmaster_user", JSON.stringify(userData))
     localStorage.setItem("taskmaster_user_timestamp", Date.now().toString())
@@ -299,6 +281,7 @@ async function loadUserData() {
     if (cachedUser) {
       const userData = JSON.parse(cachedUser)
       updateUserGreeting(userData)
+      isVerified(userData)
       showNotification("Using offline data - some information may be outdated", "warning")
       return userData
     }
@@ -307,6 +290,7 @@ async function loadUserData() {
     throw error
   }
 }
+
 
 function updateUserGreeting(userData) {
   const greeting = document.getElementById("user-greeting")
@@ -513,8 +497,8 @@ async function syncTaskUpdate(task) {
     showNotification(`Task ${action}!`, "success")
 
     // Play completion sound if enabled
-    console.log(userSettings["task-sounds"])
-    if (task.completed && userSettings["task-sounds"]) {
+    console.log(userSettings["taskSounds"])
+    if (task.completed && userSettings["taskSounds"]) {
       playCompletionSound()
     }
   } catch (error) {
@@ -558,8 +542,8 @@ async function initializeDashboard() {
     let userData = await loadUserData()
     let settings = await loadSettingsFromDB()
 
-    console.log(userData)
-    console.log(settings)
+//    console.log(userData)
+//    console.log(settings)
     // Handle any failures gracefully
     if (userData.status === "rejected") {
       console.warn("User data load failed:", userData.reason)
@@ -675,19 +659,9 @@ async function loadSettingsFromDB() {
     const res = await fetch(`/api/settings/${currentUserId}`)
     if (res.ok) {
       const settings = await res.json()
-      console.log("Fetched Settings")
-      console.log(settings)
+//      console.log("Fetched Settings")
+//      console.log(settings)
       // Merge all settings from backend with defaults
-
-      // let fetchedSettings = {
-      //   theme: settings["theme"],
-      //   "task-sounds": settings["taskSounds"],
-      //   "due-date-reminders": settings["dueDateReminders"],
-      //   "email-notifications": settings["emailNotifications"],
-      //   "task-reminders": settings["taskReminders"],
-      //   "default-priority": settings["defaultPriority"],
-      //   "tasks-per-page": settings["tasksPerPage"]
-      // }
       let fetchedSettings = settings
       localStorage.setItem("taskmaster_settings", JSON.stringify(fetchedSettings))
       localStorage.setItem("taskmaster_settings_timestamp", Date.now().toString())
@@ -706,9 +680,7 @@ async function loadSettingsFromDB() {
 }
 
 function applyUserSettings() {
-  console.log("Applying user Settings")
-  // console.log(userSettings)
-  // console.log(userSettings.theme)
+//  console.log("Applying user Settings")
   applyTheme(userSettings.theme)
   updateDarkModeToggle(userSettings.theme)
 
@@ -736,7 +708,7 @@ function applySettingsToUI(settings) {
     updateDarkModeToggle(settings.theme)
   }
 
-  console.log("Settings applied to UI:", settings)
+//  console.log("Settings applied to UI:", settings)
 
   // Apply theme immediately
 }
@@ -1094,15 +1066,6 @@ const connectionMonitor = new ConnectionMonitor()
 // ============================================================================
 // EXPORTS & GLOBAL ACCESS
 // ============================================================================
-
-// Export settings management functions for external use
-// window.SettingsManager = {
-//   getSetting,
-//   saveSetting,
-//   updateSettingsFromExternal,
-//   syncSettingsFromLocalStorage,
-//   getCurrentSettings: () => ({ ...userSettings })
-// }
 
 // Log initialization
 console.log("Dashboard initialized with settings:", userSettings)

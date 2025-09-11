@@ -22,7 +22,7 @@ function getStoredUser() {
 
 function setStoredUser(user) {
   const response = saveProfileDetails(user)
-  console.log(response)
+//  console.log(response)
   localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(user))
 }
 
@@ -47,7 +47,7 @@ function getSettings() {
 function saveSettings(settingsPatch) {
   const prev = getSettings()
   const updated = { ...prev, ...settingsPatch }
-  console.log(updated)
+//  console.log(updated)
   localStorage.setItem(STORAGE_KEYS.settings, JSON.stringify(updated))
   return updated
 }
@@ -56,9 +56,9 @@ function saveSettings(settingsPatch) {
 function savePreferencesToBackend(settingsPatch) {
   let updated = null
   const currentUserId = getUserId()
-  console.log("Current User ID:" + currentUserId)
+//  console.log("Current User ID:" + currentUserId)
   if (currentUserId) {
-    console.log(settingsPatch)
+//    console.log(settingsPatch)
     fetch(`/api/settings/preferences/${currentUserId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -66,8 +66,8 @@ function savePreferencesToBackend(settingsPatch) {
     }).then(async (res) => {
       if (res.ok) {
         updated = await res.json()
-        console.log("New Updated Settings")
-        console.log(updated)
+//        console.log("New Updated Settings")
+//        console.log(updated)
       }
     }).catch((err) => console.error("Failed to sync settings:", err))
 
@@ -81,7 +81,7 @@ function saveNotificationToBackend(settingsPatch) {
   let updated = null;
 
   const currentUserId = getUserId()
-  console.log("Current User ID:" + currentUserId)
+//  console.log("Current User ID:" + currentUserId)
   if (currentUserId) {
     fetch(`/api/settings/notification/${currentUserId}`, {
       method: "PUT",
@@ -90,8 +90,8 @@ function saveNotificationToBackend(settingsPatch) {
     }).then(async (res) => {
       if (res.ok) {
         updated = res.json()
-        console.log("Updated Notification")
-        console.log(updated)
+//        console.log("Updated Notification")
+//        console.log(updated)
       }
     }).catch((err) => console.error("Failed to sync settings:", err))
   } else {
@@ -125,6 +125,7 @@ function initializeSettingsPage() {
   initializeQuickDarkToggle()
   initializeUIState()
   showSecuritySectionForRegisteredUsers()
+  isVerified()
 }
 
 /* ============================================================================
@@ -157,13 +158,74 @@ function showSecuritySectionForRegisteredUsers() {
   }
 }
 
+function setupVerifyEmailListners(){
+  const sendButton=document.getElementById("sendCodeBtn")
+  sendButton.addEventListener("click",sendVerficationCode)
 
+  const verifyButton=document.getElementById("submitCodeBtn")
+  verifyButton.addEventListener("click",verifyCode)
+}
 
+function isVerified(){
+  const userData=getStoredUser()
+  const verifiedWarning=document.getElementById("labelVerify")
+  const sendCodeBtn=document.getElementById("sendCode");
+  if(!userData.verified){
+    verifiedWarning.classList.remove("hidden")
+    sendCodeBtn.classList.remove("hidden")
+    setupVerifyEmailListners()
+  }
+}
+
+async function sendVerficationCode(){
+  const sendButton=document.getElementById("sendCodeBtn")
+  setButtonLoading(sendButton,true)
+  const response=await fetch("/user/verify-email/send-code",{method:"GET"})
+  const answer=await response.text();
+  if(response.ok){
+    setButtonLoading(sendButton,false)
+    sendButton.classList.add("hidden")
+    const codeSection=document.getElementById("codeSection");
+    showNotification(answer,"success")
+    codeSection.classList.remove("hidden")
+  }
+  if(!response.ok){
+    setButtonLoading(sendButton,false)
+    showNotification(answer,"error")
+  }
+}
+
+async function verifyCode(){
+  const thisCode=document.getElementById("verificationCode").value;
+  console.log(thisCode)
+  const params = new URLSearchParams();
+  params.append('code', thisCode);
+  const response = await fetch("/user/verify-email/confirm-code",{
+    method:"POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body:params.toString()
+  })
+//     document.getElementById("verificationCode").value=""
+  const answer=await response.text()
+  if(response.ok){
+    showNotification(answer,"success")
+    userSettings.verified=true
+    const labelVerify=document.getElementById("labelVerify");
+    const codeSection=document.getElementById("codeSection");
+    const sendCode=document.getElementById("sendCode");
+    labelVerify.parentNode.removeChild(labelVerify)
+    codeSection.parentNode.removeChild(codeSection)
+    sendCode.parentNode.removeChild(sendCode)
+  }
+  if(!response.ok){
+    showNotification(answer,"error")
+  }
+}
 
 function getUserId() {
   const userData = JSON.parse(localStorage.getItem("taskmaster_user")) || null
-  console.log("LOGGING USER DATA")
-  console.log(userData)
+//  console.log("LOGGING USER DATA")
+//  console.log(userData)
   return userData.id || userData.user_id || null
 }
 
@@ -214,8 +276,8 @@ function setupUserSettings() {
   const stored = getSettings()
 
   userSettings = stored
-  console.log("USER SETTINGS:")
-  console.log(userSettings)
+//  console.log("USER SETTINGS:")
+//  console.log(userSettings)
   saveSettings(userSettings)
   checkProfilePicture()
 }
@@ -252,7 +314,7 @@ function setupEventListeners() {
   document.querySelectorAll(".settings-nav-btn").forEach((btn) => btn.addEventListener("click", handleSectionChange))
 
   // Profile form
-  const profileForm = document.getElementById("profile-form")
+  const profileForm = document.getElementById("submitForm")
   if (profileForm) profileForm.addEventListener("submit", handleProfileUpdate)
 
   // Change avatar interactions
@@ -401,7 +463,7 @@ function fileToDataURL(file) {
     reader.onerror = reject
     reader.onload = () => resolve(reader.result)
     const result = saveProfilePicture(getUserId(), file)
-    console.log(result)
+//    console.log(result)
     reader.readAsDataURL(file)
   })
 }
@@ -645,17 +707,17 @@ async function handlePreferencesSave() {
   try {
     const settings = collectPreferencesSettings()
 
-    console.log("SETTINGS")
-    console.log(settings)
+//    console.log("SETTINGS")
+//    console.log(settings)
     if (Object.keys(settings).length === 0) {
       showNotification("No preference changes to save", "info")
       return
     }
 
     const updated = await savePreferencesToBackend(settings)
-    console.log(updated)
+//    console.log(updated)
     userSettings = { ...settings, ...updated }
-    console.log(userSettings)
+//    console.log(userSettings)
     saveSettings(userSettings)
     resetSectionModifiedState("preferences-section")
     showNotification("Preferences saved successfully!", "success")
@@ -771,7 +833,7 @@ async function savePasswordToBackend(current, newPass, confirm) {
     })
   })
   const txt = await response.text()
-  console.log(txt)
+//  console.log(txt)
   if (response.ok) {
     showNotification("Password updated successfully!", "success")
   }

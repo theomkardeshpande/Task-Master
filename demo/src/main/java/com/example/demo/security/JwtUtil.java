@@ -15,11 +15,12 @@ import java.util.Map;
 
 @Component
 public class JwtUtil {
+    private final String secretKeyBase64;
+    public JwtUtil(@Value("${app.jwt.secret}") String secretKeyBase64) {
+        this.secretKeyBase64 = secretKeyBase64;
+    }
 
     // Load secret key from application properties in Base64 encoded form
-    @Value("${JWT_SECRET}")
-    private String secretKeyBase64;
-
     private Key key;
     private final long expirationMs = 86400000; // 1 day token validity
 

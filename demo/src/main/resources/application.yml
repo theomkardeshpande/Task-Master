@@ -85,19 +85,19 @@ spring:
             user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
             user-name-attribute: sub
 
-logging:
-  level:
-    com:
-      myapp: DEBUG
-    org:
-      springframework: DEBUG
+  logging:
+    level:
+      com:
+        myapp: DEBUG
+      org:
+        springframework: DEBUG
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: '*'
-    base-path: /actuator
-  endpoint:
-    prometheus:
-      enabled: true
+  management:
+    endpoints:
+      web:
+        exposure:
+          include: '*'
+      base-path: /actuator
+    endpoint:
+      prometheus:
+        enabled: true

@@ -55,32 +55,6 @@ function setupPasswordToggle() {
   })
 }
 
-// function setupDemoCredentials() {
-//   const fillDemoBtn = document.getElementById("fill-demo-btn")
-//   const emailInput = document.getElementById("email")
-//   const passwordInput = document.getElementById("password")
-
-//   // fillDemoBtn.addEventListener("click", () => {
-//   //   emailInput.value = "demo@taskmaster.com"
-//   //   passwordInput.value = "demo123"
-
-//   //   // Clear any existing errors
-//   //   clearError({ target: emailInput })
-//   //   clearError({ target: passwordInput })
-
-//   //   // Add visual feedback
-//   //   ;[emailInput, passwordInput].forEach((input) => {
-//   //     input.classList.add("animate-pulse")
-//   //     setTimeout(() => {
-//   //       input.classList.remove("animate-pulse")
-//   //     }, 600)
-//   //   })
-
-//   //   // Focus on submit button
-//   //   document.getElementById("submit-btn").focus()
-//   // })
-// }
-
 async function handleLogin(event) {
   event.preventDefault()
 
@@ -105,10 +79,6 @@ async function handleLogin(event) {
   const submitBtn = document.getElementById("submit-btn")
   const btnText = submitBtn.querySelector(".btn-text")
   const spinner = submitBtn.querySelector(".spinner")
-
-  // submitBtn.disabled = true
-  // btnText.textContent = "Signing In..."
-  // spinner.classList.remove("hidden")
 
   try {
     // Disable button & show spinner (you probably have done this before calling this code)

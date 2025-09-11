@@ -22,7 +22,7 @@ function validateResetToken() {
   const urlParams = new URLSearchParams(window.location.search);
   gettoken = urlParams.get("token");
   token=gettoken
-  console.log("GETTOKEN"+gettoken)
+//  console.log("GETTOKEN"+gettoken)
   if (!gettoken) {
     showNotification("Invalid or missing reset token. Redirecting to forgot password page.", "error");
     setTimeout(() => {
@@ -200,7 +200,7 @@ async function passwordReset(password) {
     throw new Error("Missing reset token");
   }
   token=getToken()
-  console.log(token)
+//  console.log(token)
   const data = {
     token: token.trim(),
     newPassword: password.trim(),

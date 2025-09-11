@@ -10,6 +10,7 @@ public class UserProfileData {
     private String bio;
     private int id;
     private String role;
+    private boolean verified=false;
 
     private byte[] profilePicture;
 }

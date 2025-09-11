@@ -38,6 +38,8 @@ public class CustomUserDetails implements UserDetails {
 
     public String getRole(){ return user.getRole();}
 
+    public boolean isVerified(){return user.isVerified();}
+
     public String getBio(){return  user.getBio();}
 
     public byte[] getProfilePicture(){return user.getProfilePicture();}
