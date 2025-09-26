@@ -28,9 +28,10 @@ public class AuthController {
         String token = passwordResetService.createPasswordResetToken(request.getEmail(),request.getFullname());
         System.out.println("RETURN TOKEN:"+token);
         if (token == null) {
-            return ResponseEntity.badRequest().build();
+            System.out.println("SEND BAD RESPONSE");
+            return ResponseEntity.badRequest().body("Please Check Email Address And Fullname Properly");
         }else {
-            return ResponseEntity.ok().body("Password reset link sent to your email");
+            return ResponseEntity.ok("Password reset link sent to your email");
         }
     }
 

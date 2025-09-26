@@ -57,7 +57,6 @@ public class LoginController {
             System.out.println("User ID: " + userDetails.getUserId());
 
             int userId = userDetails.getUserId();
-            String name = userDetails.getFullname();
 
             // Generate JWT token with user details
             String token = jwtUtil.generateToken(userDetails);

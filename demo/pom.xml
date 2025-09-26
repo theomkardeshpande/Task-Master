@@ -1,31 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <profiles>
-        <profile>
-            <id>dev</id>
-            <properties>
-                <!--suppress UnresolvedMavenProperty -->
-                <db.user>${DB_USER}</db.user>
-                <!--suppress UnresolvedMavenProperty -->
-                <db.pass>${DB_PASS}</db.pass>
-                <!--suppress UnresolvedMavenProperty -->
-                <mail.user>${MAIL_USER}</mail.user>
-                <!--suppress UnresolvedMavenProperty -->
-                <mail.pass>${MAIL_PASS}</mail.pass>
-            </properties>
-        </profile>
-
-        <profile>
-            <id>prod</id>
-            <properties>
-                <db.user>prod_user</db.user>
-                <db.pass>prod_password</db.pass>
-                <mail.user>prod@example.com</mail.user>
-                <mail.pass>prod_mail_password</mail.pass>
-            </properties>
-        </profile>
-    </profiles>
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -52,8 +27,8 @@
         <url/>
     </scm>
     <properties>
-        <java.version>19</java.version>
-        <maven.compiler.release>19</maven.compiler.release>
+        <java.version>21</java.version>
+        <maven.compiler.release>21</maven.compiler.release>
     </properties>
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-jpa -->

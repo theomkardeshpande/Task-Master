@@ -1,20 +1,20 @@
 server:
   port: ${SERVER_PORT:8081}
-  ssl:
-    key-store: classpath:keystore.p12
-    key-store-password: ${KEYSTORE_PASSWORD}
-    key-store-type: PKCS12
-    key-alias: your_key_alias
+  # ssl:
+  #   key-store: classpath:keystore.p12
+  #   key-store-password: ${KEYSTORE_PASSWORD}
+  #   key-store-type: PKCS12
+  #   key-alias: your_key_alias
 
 app:
   url: ${APP_URL:https://localhost:8081}
   file:
     upload-dir: ./uploads/profile-picture
   jwt:
-    secret: ${JWT_SECRET}
+    secret: tXXv2p9c4EZ/O6R/4TGSYk7HVlwy/bRAjRwB+hrDBd4=
 
 spring:
-  profiles:
+  profiles: 
     active: dev
   application:
     name: TodoApp
