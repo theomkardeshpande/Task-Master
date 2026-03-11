@@ -5,6 +5,7 @@ import com.example.demo.Model.PasswordResetToken;
 import com.example.demo.Repository.PasswordResetTokenRepo;
 import com.example.demo.Repository.ResetRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,6 +30,8 @@ public class PasswordResetService {
     @Autowired
     private JavaMailSender javaMailSender;
 
+    @Value("${spring.mail.username:default@gmail.com}")
+    private String fromEmail;
 
     public String createPasswordResetToken(String userEmail,String fullname){
         AppUser user=resetRepo.findByEmailAndFullname(userEmail,fullname);
@@ -49,6 +52,7 @@ public class PasswordResetService {
         String domain=System.getenv("API_BASE_URL");
         String resetLink=domain+"/auth/reset-password?token=" + token;
         SimpleMailMessage message=new SimpleMailMessage();
+        message.setFrom(fromEmail);
         message.setTo(email);
         message.setSubject("Reset Your Task Master Password");
         message.setText("To reset your password, please click the following link:\n" + resetLink);

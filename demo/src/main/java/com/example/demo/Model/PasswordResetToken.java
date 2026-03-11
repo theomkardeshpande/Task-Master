@@ -1,7 +1,6 @@
 package com.example.demo.Model;
 
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
@@ -9,7 +8,6 @@ import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @Entity
-@Data
 @Table(name = "password_reset_token")
 public class PasswordResetToken {
 
@@ -31,5 +29,39 @@ public class PasswordResetToken {
         this.token=token;
         this.user=user;
         this.expiryDate=expiryDate;
+    }
+
+    // Getters
+    public int getTokenId() {
+        return tokenId;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public AppUser getUser() {
+        return user;
+    }
+
+    public LocalDateTime getExpiryDate() {
+        return expiryDate;
+    }
+
+    // Setters
+    public void setTokenId(int tokenId) {
+        this.tokenId = tokenId;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public void setUser(AppUser user) {
+        this.user = user;
+    }
+
+    public void setExpiryDate(LocalDateTime expiryDate) {
+        this.expiryDate = expiryDate;
     }
 }

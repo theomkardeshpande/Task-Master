@@ -1,14 +1,12 @@
 package com.example.demo.Model;
 
 import jakarta.persistence.*;
-import lombok.Data;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.UUID;
 
-@Data
 @Entity
 public class VerificationToken {
 
@@ -33,4 +31,37 @@ public class VerificationToken {
         this.expiryDate = Date.from(Instant.now().plus(EXPIRATION_MINUTES, ChronoUnit.MINUTES));
     }
 
+    // Getters
+    public int getId() {
+        return id;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public Date getExpiryDate() {
+        return expiryDate;
+    }
+
+    public AppUser getUser() {
+        return user;
+    }
+
+    // Setters
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public void setExpiryDate(Date expiryDate) {
+        this.expiryDate = expiryDate;
+    }
+
+    public void setUser(AppUser user) {
+        this.user = user;
+    }
 }

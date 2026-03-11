@@ -3,6 +3,8 @@ package com.example.demo.Service;
 import com.example.demo.Model.AppUser;
 import com.example.demo.Model.CustomUserDetails;
 import com.example.demo.Repository.UserRepo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -10,18 +12,20 @@ import org.springframework.stereotype.Service;
 
 
 @Service
-public class CustomUserDetailService implements UserDetailsService {
+public class CustomUserDetailsService implements UserDetailsService {
 
-    private final UserRepo userRepo;
+    @Autowired
+    private UserRepo userRepository;
 
-    public CustomUserDetailService(UserRepo userRepo) {
-        this.userRepo = userRepo;
-    }
-
+    // CustomUserDetailsService.java — ✅ Cleaner approach
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        AppUser user = userRepo.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("USER NOT FOUND..!"));
+        AppUser user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("No account found."));
 
+        // ✅ Just return the user — Spring checks isEnabled() automatically
         return new CustomUserDetails(user);
     }
 }
+
+

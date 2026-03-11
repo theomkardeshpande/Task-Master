@@ -30,6 +30,9 @@ public class UserService {
     @Transactional
     public void registerUser(AppUser user) {
         // In a real app, you would hash the password here before saving
+        if (userRepo.existsByEmail(user.getEmail())) {
+            throw new IllegalStateException("Email already registered: " + user.getEmail());
+        }
         if (userRepo.findByEmail(user.getEmail()).isPresent()) {
             throw new IllegalStateException("Email already in use.");
         }

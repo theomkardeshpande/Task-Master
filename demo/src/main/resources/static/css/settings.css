@@ -27,6 +27,10 @@
     font-size: 1.1rem;
 }
 
+body.dark-mode header.d-md-none {
+  background-color: #212529;
+  color: #f8f9fa;
+}
 /* Enhanced card styling */
 .settings-card {
     background: var(--light-card-bg);
@@ -279,6 +283,7 @@ body.dark-mode .time-input-group input[type="time"] {
     }
 }
 
+
 /* Responsive design */
 @media (max-width: 768px) {
     .settings-container {
@@ -344,4 +349,21 @@ body.dark-mode .time-input-group input[type="time"] {
         opacity: 1;
         transform: translateY(0);
     }
+}
+/* ---------------------------------------------------
+   1. Override the `--bs-body-bg` var when in dark-mode
+   --------------------------------------------------- */
+body.dark-mode {
+  /* you can also use your --dark-secondary-bg var here */
+  --bs-body-bg: #212529;
+  /* optionally override body text color, etc */
+  --bs-body-color: #f8f9fa;
+}
+
+/* ---------------------------------------------------
+   2. Force any .bg-body to pull from the updated var
+   --------------------------------------------------- */
+body.dark-mode .bg-body {
+  background-color: var(--bs-body-bg) !important;
+  color: var(--bs-body-color) !important;
 }

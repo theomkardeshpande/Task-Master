@@ -1,11 +1,9 @@
 package com.example.demo.Model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Data;
 
 import java.time.LocalDate;
 
-@Data
 public class UpdateTaskRequest {
 
     private int taskId;
@@ -14,4 +12,38 @@ public class UpdateTaskRequest {
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate completionDate;
+
+    // Getters
+    public int getTaskId() {
+        return taskId;
+    }
+
+    public String getTaskTitle() {
+        return taskTitle;
+    }
+
+    public String getTaskDescription() {
+        return taskDescription;
+    }
+
+    public LocalDate getCompletionDate() {
+        return completionDate;
+    }
+
+    // Setters
+    public void setTaskId(int taskId) {
+        this.taskId = taskId;
+    }
+
+    public void setTaskTitle(String taskTitle) {
+        this.taskTitle = taskTitle;
+    }
+
+    public void setTaskDescription(String taskDescription) {
+        this.taskDescription = taskDescription;
+    }
+
+    public void setCompletionDate(LocalDate completionDate) {
+        this.completionDate = completionDate;
+    }
 }

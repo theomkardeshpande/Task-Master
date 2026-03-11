@@ -8,39 +8,37 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="icon" type="image/x-icon" th:href="@{/img/logo.png}">
     <link th:href="@{/css/styles.css}" rel="stylesheet">
-    <script lang="javascript">
+    <script>
         document.addEventListener('DOMContentLoaded', function() {
-          // Password toggle functionality
-          const passwordToggles = document.querySelectorAll('.password-toggle');
-          passwordToggles.forEach(toggle => {
-            toggle.addEventListener('click', function() {
-              const passwordInput = this.previousElementSibling;
-              const icon = this.querySelector('i');
-
-              if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
-              } else {
-                passwordInput.type = 'password';
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
-              }
+            const passwordToggles = document.querySelectorAll('.password-toggle');
+            passwordToggles.forEach(toggle => {
+                toggle.addEventListener('click', function() {
+                    const passwordInput = this.previousElementSibling;
+                    const icon = this.querySelector('i');
+                    if (passwordInput.type === 'password') {
+                        passwordInput.type = 'text';
+                        icon.classList.remove('fa-eye');
+                        icon.classList.add('fa-eye-slash');
+                    } else {
+                        passwordInput.type = 'password';
+                        icon.classList.remove('fa-eye-slash');
+                        icon.classList.add('fa-eye');
+                    }
+                });
             });
-          });
         });
     </script>
-    <!-- Inline style for increasing modal size; this can be placed in your styles.css file -->
     <style>
         .auth-container {
-          max-width: 600px; /* Increase as needed */
-          width: 100%;
-          margin: 0 auto;
-          padding: 1rem;
+            max-width: 600px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 1rem;
         }
     </style>
 </head>
 <body class="auth-page">
+
 <!-- Navigation -->
 <nav class="navbar navbar-light bg-transparent py-3">
     <div class="container">
@@ -61,20 +59,64 @@
 
         <div class="card border-0 shadow-lg">
             <div class="card-body p-4">
-                <p th:if="${param.error}">Invalid email or password.</p>
-                <p th:if="${param.logout}">Successfully logged out.</p>
-                <form id="signinForm" th:action="@{/login}" th:method="post" novalidate>
+
+                <!-- ✅ Error Messages with param.error[0] fix -->
+                <div th:if="${param.error != null}" class="mb-3">
+                    <div th:if="${param.error[0] == 'not-verified'}"
+                         class="alert alert-warning d-flex align-items-center" role="alert">
+                        <i class="fas fa-envelope me-2"></i>
+                        Account not verified. Please check your email inbox.
+                    </div>
+                    <div th:if="${param.error[0] == 'invalid-credentials'}"
+                         class="alert alert-danger d-flex align-items-center" role="alert">
+                        <i class="fas fa-times-circle me-2"></i>
+                        Invalid email or password.
+                    </div>
+                    <div th:if="${param.error[0] == 'error'}"
+                         class="alert alert-danger d-flex align-items-center" role="alert">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        Login failed. Please try again.
+                    </div>
+                </div>
+
+                <!-- ✅ Email verified successfully -->
+                <div th:if="${param.verified != null}"
+                     class="alert alert-success d-flex align-items-center mb-3" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>
+                    Email verified successfully! You can now sign in.
+                </div>
+
+                <!-- ✅ Registration success -->
+                <div th:if="${param.success != null}"
+                     class="alert alert-success d-flex align-items-center mb-3" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>
+                    Registration successful! Please verify your email before signing in.
+                </div>
+
+                <!-- ✅ Logout success -->
+                <div th:if="${param.logout != null}"
+                     class="alert alert-info d-flex align-items-center mb-3" role="alert">
+                    <i class="fas fa-sign-out-alt me-2"></i>
+                    You have been logged out successfully.
+                </div>
+
+                <!-- Login Form -->
+                <form id="signinForm" th:action="@{/login}" method="post" novalidate>
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" name="email" id="email" placeholder="you@example.com" required>
+                        <input type="email" class="form-control" name="email" id="email"
+                               placeholder="you@example.com" required>
                         <div class="invalid-feedback"></div>
                     </div>
 
                     <div class="mb-3">
                         <label for="password" class="form-label">Password</label>
                         <div class="position-relative">
-                            <input type="password" class="form-control" name="password" id="password" placeholder="••••••••" required>
-                            <button type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y password-toggle" style="border: none; background: none;">
+                            <input type="password" class="form-control" name="password" id="password"
+                                   placeholder="••••••••" required>
+                            <button type="button"
+                                    class="btn btn-link position-absolute end-0 top-50 translate-middle-y password-toggle"
+                                    style="border: none; background: none;">
                                 <i class="fas fa-eye text-muted"></i>
                             </button>
                         </div>
@@ -87,17 +129,21 @@
                     </button>
                 </form>
 
-                <!-- ✅ Forgot Password Link Moved Outside the Form -->
+                <!-- Forgot Password -->
                 <div class="text-center mt-3">
-                    <a th:href="@{/forgot-password}" class="text-primary text-decoration-none small">Forgot password?</a>
+                    <a th:href="@{/forgot-password}" class="text-primary text-decoration-none small">
+                        Forgot password?
+                    </a>
                 </div>
 
-                <div class="text-center">
+                <!-- Register Link -->
+                <div class="text-center mt-2">
                     <p class="text-muted small mb-0">
                         Don't have an account?
                         <a th:href="@{/register}" class="text-primary text-decoration-none">Sign up</a>
                     </p>
                 </div>
+
             </div>
         </div>
     </div>

@@ -5,6 +5,8 @@ server:
   port: ${SERVER_PORT:8081}
 
 spring:
+  profiles:
+    active: dev
   application:
     name: TodoApp
 ########################################################################
@@ -52,14 +54,15 @@ logging:
   mail:
     host: ${MAIL_HOST:smtp.gmail.com}
     port: ${MAIL_PORT:587}
-    username: ${MAIL_USER}
-    password: ${MAIL_PASS}
+    username: ${MAIL_USER:default@gmail.com}
+    password: ${MAIL_PASS:default_password}
     properties:
       mail:
         smtp:
           auth: true
           starttls:
             enable: true
+            required: true
           debug: false
 
 management:

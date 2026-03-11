@@ -79,7 +79,9 @@
                                     </div>
                                 </div>
                             </div>
-                            <button class="btn btn-primary w-100 mt-3">Add New Task</button>
+                            <button th:onclick="|location.href='@{/tasks/new}'|" class="btn btn-primary w-100 mt-3">
+                                Add New Task
+                            </button>
                         </div>
                     </div>
                     <div class="task-preview-bg"></div>
