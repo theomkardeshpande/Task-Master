@@ -1,5 +1,5 @@
 # --- Build Stage ---
-FROM maven:3.9.7-eclipse-temurin-17 AS build
+FROM maven:3.9.9-eclipse-temurin-21 AS build
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -12,7 +12,7 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 # --- Run Stage ---
-FROM eclipse-temurin:17-jre-jammy
+FROM eclipse-temurin:21-jre-jammy
 
 # Set the working directory in the new image
 WORKDIR /app
