@@ -5,17 +5,12 @@ import com.example.demo.Model.PasswordResetToken;
 import com.example.demo.Repository.PasswordResetTokenRepo;
 import com.example.demo.Repository.ResetRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-
 import java.util.UUID;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PasswordResetService {
@@ -30,25 +25,7 @@ public class PasswordResetService {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private JavaMailSender javaMailSender;
-
-    @Value("${spring.mail.username:default@gmail.com}")
-    private String fromEmail;
-
-//    public String createPasswordResetToken(String userEmail,String fullname){
-//        AppUser user=resetRepo.findByEmailAndFullname(userEmail,fullname);
-//        if (user==null ){
-//            return null;
-//        }
-//        String token= UUID.randomUUID().toString();
-//        LocalDateTime expiryDate=LocalDateTime.now().plusHours(1);
-//        PasswordResetToken resetToken=new PasswordResetToken(token,user,expiryDate);
-//        passwordResetTokenRepo.save(resetToken);
-//        sendResetLinkEmail(userEmail,token);
-//        System.out.println("MAIL SEND");
-//        return token;
-//
-//    }
+    private GmailApiService gmailApiService;
 
     @Transactional
     public String createPasswordResetToken(String userEmail, String fullname) {
@@ -57,7 +34,6 @@ public class PasswordResetService {
             return null;
         }
 
-        // ✅ Delete any existing token for this user before creating a new one
         passwordResetTokenRepo.deleteByUser(user);
         passwordResetTokenRepo.flush();
 
@@ -66,32 +42,38 @@ public class PasswordResetService {
         PasswordResetToken resetToken = new PasswordResetToken(token, user, expiryDate);
         passwordResetTokenRepo.save(resetToken);
 
-        sendResetLinkEmail(userEmail, token);
-        System.out.println("MAIL SEND");
+        try {
+            sendResetLinkEmail(userEmail, token);
+            System.out.println("MAIL SENT");
+        } catch (Exception e) {
+            System.err.println("Reset email failed: " + e.getMessage());
+        }
+
         return token;
     }
 
-    private void sendResetLinkEmail(String email,String token){
-        String domain=System.getenv("API_BASE_URL");
-        String resetLink=domain+"/auth/reset-password?token=" + token;
-        SimpleMailMessage message=new SimpleMailMessage();
-        message.setFrom(fromEmail);
-        message.setTo(email);
-        message.setSubject("Reset Your Task Master Password");
-        message.setText("To reset your password, please click the following link:\n" + resetLink);
-        javaMailSender.send(message);
+    private void sendResetLinkEmail(String email, String token) {
+        String domain = System.getenv("API_BASE_URL");
+        String resetLink = domain + "/auth/reset-password?token=" + token;
+
+        String subject = "Reset Your Task Master Password";
+        String body = "To reset your password, please click the following link:\n"
+                + resetLink
+                + "\n\nThis link expires in 1 hour."
+                + "\n\nIf you didn't request this, ignore this email.";
+
+        gmailApiService.sendEmail(email, subject, body);
     }
 
-    public boolean resetPassword(String token,String newPassword){
+    public boolean resetPassword(String token, String newPassword) {
         PasswordResetToken resetToken = passwordResetTokenRepo.findByToken(token);
-        if (resetToken==null || resetToken.getExpiryDate().isBefore(LocalDateTime.now())){
+        if (resetToken == null || resetToken.getExpiryDate().isBefore(LocalDateTime.now())) {
             return false;
         }
-        AppUser user=resetToken.getUser();
+        AppUser user = resetToken.getUser();
         user.setPassword(passwordEncoder.encode(newPassword));
         resetRepo.save(user);
         passwordResetTokenRepo.delete(resetToken);
         return true;
     }
-
 }

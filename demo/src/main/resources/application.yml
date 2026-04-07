@@ -51,19 +51,19 @@ logging:
 ##  MAIL (Gmail example)
 ########################################################################
 #spring:
-  mail:
-    host: ${MAIL_HOST:smtp.gmail.com}
-    port: ${MAIL_PORT:587}
-    username: ${MAIL_USER:default@gmail.com}
-    password: ${MAIL_PASS:default_password}
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-            required: true
-          debug: false
+#  mail:
+#    host: ${MAIL_HOST:smtp.gmail.com}
+#    port: ${MAIL_PORT:587}
+#    username: ${MAIL_USER:default@gmail.com}
+#    password: ${MAIL_PASS:default_password}
+#    properties:
+#      mail:
+#        smtp:
+#          auth: true
+#          starttls:
+#            enable: true
+#            required: true
+#          debug: false
 
 management:
   endpoints:
