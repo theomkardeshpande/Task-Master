@@ -1,34 +1,23 @@
-########################################################################
-##  CORE APPLICATION INFO
-########################################################################
 server:
-  port: ${SERVER_PORT:8081}
+  port: ${SERVER_PORT}
+  address: ${SERVER_ADDRESS}
 
 spring:
-  profiles:
-    active: dev
+  profile: prod
   application:
     name: TodoApp
-########################################################################
-##  DATABASE  (MySQL example)
-########################################################################
-#spring:
+    api:
+      base-url: ${API_BASE_URL}
   datasource:
-    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:todo}
-    #url: jdbc:mysql://localhost:3306/
-    username: ${DB_USER:omkar}
-    password: ${DB_PASS:omkar}
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+    username: ${DB_USER}
+    password: ${DB_PASS}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
       ddl-auto: update
     show-sql: true
-
-########################################################################
-##  THYMELEAF & DEVTOOLS
-########################################################################
-#spring:
   thymeleaf:
     cache: false
   devtools:
@@ -36,41 +25,9 @@ spring:
       enabled: true
     livereload:
       enabled: true
-
-########################################################################
-##  LOGGING
-########################################################################
 logging:
   level:
     com:
       myapp: DEBUG
     org:
       springframework: INFO
-
-########################################################################
-##  MAIL (Gmail example)
-########################################################################
-#spring:
-#  mail:
-#    host: ${MAIL_HOST:smtp.gmail.com}
-#    port: ${MAIL_PORT:587}
-#    username: ${MAIL_USER:default@gmail.com}
-#    password: ${MAIL_PASS:default_password}
-#    properties:
-#      mail:
-#        smtp:
-#          auth: true
-#          starttls:
-#            enable: true
-#            required: true
-#          debug: false
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-    base-path: /actuator
-  endpoint:
-    prometheus:
-      enabled: true

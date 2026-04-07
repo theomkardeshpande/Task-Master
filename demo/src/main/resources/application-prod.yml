@@ -3,27 +3,32 @@ server:
   address: ${SERVER_ADDRESS}
 
 spring:
+  profile: prod
+  application:
+    name: TodoApp
+    api:
+      base-url: ${API_BASE_URL}
   datasource:
-    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?useSSL=true&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}
     username: ${DB_USER}
     password: ${DB_PASS}
     driver-class-name: com.mysql.cj.jdbc.Driver
-    hikari:
-      maximum-pool-size: 5
-      connection-timeout: 30000
-      connection-test-query: SELECT 1
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
       ddl-auto: update
-    show-sql: false
+    show-sql: true
   thymeleaf:
-    cache: true
+    cache: false
   devtools:
     restart:
-      enabled: false
-
+      enabled: true
+    livereload:
+      enabled: true
 logging:
   level:
+    com:
+      myapp: DEBUG
     org:
-      springframework: WARN
+      springframework: INFO
+
