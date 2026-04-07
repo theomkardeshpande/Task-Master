@@ -8,12 +8,12 @@ spring:
   application:
     name: TodoApp
     api:
-      base-url:  ${API_BASE_URL:http://localhost:8081}
+      base-url:  ${API_BASE_URL}
   mail:
-    host: ${MAIL_HOST:smtp.gmail.com}
-    port: ${MAIL_PORT:587}
-    username: ${MAIL_USER:prod@gmail.com}
-    password: ${MAIL_PASS:prod_password}
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    username: ${MAIL_USER}
+    password: ${MAIL_PASS}
     properties:
       mail:
         smtp:

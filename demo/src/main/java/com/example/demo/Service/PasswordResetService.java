@@ -10,10 +10,12 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
 import java.util.UUID;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PasswordResetService {
@@ -33,19 +35,40 @@ public class PasswordResetService {
     @Value("${spring.mail.username:default@gmail.com}")
     private String fromEmail;
 
-    public String createPasswordResetToken(String userEmail,String fullname){
-        AppUser user=resetRepo.findByEmailAndFullname(userEmail,fullname);
-        if (user==null ){
+//    public String createPasswordResetToken(String userEmail,String fullname){
+//        AppUser user=resetRepo.findByEmailAndFullname(userEmail,fullname);
+//        if (user==null ){
+//            return null;
+//        }
+//        String token= UUID.randomUUID().toString();
+//        LocalDateTime expiryDate=LocalDateTime.now().plusHours(1);
+//        PasswordResetToken resetToken=new PasswordResetToken(token,user,expiryDate);
+//        passwordResetTokenRepo.save(resetToken);
+//        sendResetLinkEmail(userEmail,token);
+//        System.out.println("MAIL SEND");
+//        return token;
+//
+//    }
+
+    @Transactional
+    public String createPasswordResetToken(String userEmail, String fullname) {
+        AppUser user = resetRepo.findByEmailAndFullname(userEmail, fullname);
+        if (user == null) {
             return null;
         }
-        String token= UUID.randomUUID().toString();
-        LocalDateTime expiryDate=LocalDateTime.now().plusHours(1);
-        PasswordResetToken resetToken=new PasswordResetToken(token,user,expiryDate);
+
+        // ✅ Delete any existing token for this user before creating a new one
+        passwordResetTokenRepo.deleteByUser(user);
+        passwordResetTokenRepo.flush();
+
+        String token = UUID.randomUUID().toString();
+        LocalDateTime expiryDate = LocalDateTime.now().plusHours(1);
+        PasswordResetToken resetToken = new PasswordResetToken(token, user, expiryDate);
         passwordResetTokenRepo.save(resetToken);
-        sendResetLinkEmail(userEmail,token);
+
+        sendResetLinkEmail(userEmail, token);
         System.out.println("MAIL SEND");
         return token;
-
     }
 
     private void sendResetLinkEmail(String email,String token){
