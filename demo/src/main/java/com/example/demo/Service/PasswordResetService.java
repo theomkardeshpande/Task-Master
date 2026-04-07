@@ -15,17 +15,20 @@ import java.util.UUID;
 @Service
 public class PasswordResetService {
 
-    @Autowired
-    private ResetRepo resetRepo;
+    private final ResetRepo resetRepo;
 
-    @Autowired
-    private PasswordResetTokenRepo passwordResetTokenRepo;
+    private final PasswordResetTokenRepo passwordResetTokenRepo;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private GmailApiService gmailApiService;
+    private final GmailApiService gmailApiService;
+
+    public PasswordResetService(ResetRepo resetRepo, PasswordResetTokenRepo passwordResetTokenRepo, PasswordEncoder passwordEncoder, GmailApiService gmailApiService){
+        this.resetRepo=resetRepo;
+        this.passwordResetTokenRepo= passwordResetTokenRepo;
+        this.passwordEncoder=passwordEncoder;
+        this.gmailApiService=gmailApiService;
+    }
 
     @Transactional
     public String createPasswordResetToken(String userEmail, String fullname) {
